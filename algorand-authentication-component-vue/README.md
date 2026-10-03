@@ -10,7 +10,7 @@ header it can verify without any shared secret.
   TypeScript types, and an [AI integration guide](docs/AI_INTEGRATION.md).
 - Upgrading from 1.x? Read [docs/MIGRATION.md](docs/MIGRATION.md) (5 minutes).
 - Live demo: <https://algorand-authentication-demo.vercel.app/> · demo source:
-  [`algorand-authentication-demo`](https://github.com/scholtz/algorand-authentication-component-vue/tree/main/algorand-authentication-demo)
+  [`algorand-authentication-demo`](https://github.com/ludovit-scholtz/algorand-authentication-component-vue/tree/main/algorand-authentication-demo)
 
 ## Install
 

@@ -6,7 +6,7 @@ description: Add Algorand / AVM sign-in (ARC-14 wallet signatures via @txnlab/us
 # Integrate algorand-authentication-component-vue (v2)
 
 You are adding a sign-in screen and a signed-in session to a **Vue 3** app using
-`algorand-authentication-component-vue@2` (<https://github.com/scholtz/algorand-authentication-component-vue>).
+`algorand-authentication-component-vue@2` (<https://github.com/ludovit-scholtz/algorand-authentication-component-vue>).
 Follow the steps in order, do not skip the verification section, and do not improvise APIs that are
 not written here — v1.x, use-wallet 3/4 and PrimeVue-era snippets you may remember are **wrong** for v2.
 

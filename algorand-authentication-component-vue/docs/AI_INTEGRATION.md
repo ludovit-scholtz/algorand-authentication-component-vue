@@ -17,7 +17,7 @@ and follow it to add Algorand wallet / ARC-76 sign-in to this app. Ask me for an
 ```
 
 If the package is not installed yet, point the agent at the raw file instead:
-`https://raw.githubusercontent.com/scholtz/algorand-authentication-component-vue/main/algorand-authentication-component-vue/skill/algorand-authentication-integration/SKILL.md`
+`https://raw.githubusercontent.com/ludovit-scholtz/algorand-authentication-component-vue/main/algorand-authentication-component-vue/skill/algorand-authentication-integration/SKILL.md`
 
 **Claude Code** — install it as a project skill so it is picked up automatically:
 
