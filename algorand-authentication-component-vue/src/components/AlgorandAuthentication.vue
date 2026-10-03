@@ -188,6 +188,25 @@ async function disconnectWallet(wallet: Wallet) {
   }
 }
 
+/** Keeps Tab / Shift+Tab inside the modal password dialog. */
+function trapFocus(event: KeyboardEvent) {
+  const dialog = event.currentTarget as HTMLElement
+  const items = [
+    ...dialog.querySelectorAll<HTMLElement>('input, button, [href], select, textarea')
+  ].filter((el) => !(el as HTMLButtonElement).disabled)
+  if (!items.length) return
+  const first = items[0]
+  const last = items[items.length - 1]
+  const active = document.activeElement
+  if (event.shiftKey && active === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && active === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
 function cancelSignature() {
   authStore.signaturePromise?.reject(new Error(t('errCancelled')))
   password.value = ''
@@ -400,6 +419,7 @@ async function signWithArc76() {
       novalidate
       @submit.prevent="signWithArc76"
       @keydown.esc="cancelSignature"
+      @keydown.tab="trapFocus"
     >
       <h2 id="aa-sign-title" class="aa-title">
         <template v-if="authStore.dataToSign">{{ t('signData') }}</template>

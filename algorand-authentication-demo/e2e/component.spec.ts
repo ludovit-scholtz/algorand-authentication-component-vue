@@ -220,6 +220,24 @@ test.describe('ARC-76 account', () => {
     await expect(page.getByTestId('auth-account')).toHaveText(address)
   })
 
+  test('keeps keyboard focus inside the password dialog', async ({ page }) => {
+    await signInWithArc76(page)
+    await expect(page.getByTestId('authenticated')).toBeVisible({ timeout: 30_000 })
+    await page.getByTestId('sign').click()
+    const dialog = page.getByRole('dialog')
+    await expect(page.locator('#aa-sign-password')).toBeFocused()
+    // fill the password so the Continue button is enabled, then tab around the whole dialog
+    await page.locator('#aa-sign-password').fill(ARC76_PASSWORD)
+    for (let i = 0; i < 8; i++) {
+      await page.keyboard.press('Tab')
+      expect(await dialog.evaluate((el) => el.contains(document.activeElement))).toBe(true)
+    }
+    for (let i = 0; i < 8; i++) {
+      await page.keyboard.press('Shift+Tab')
+      expect(await dialog.evaluate((el) => el.contains(document.activeElement))).toBe(true)
+    }
+  })
+
   test('closes the password dialog with Escape', async ({ page }) => {
     await signInWithArc76(page)
     await expect(page.getByTestId('authenticated')).toBeVisible({ timeout: 30_000 })

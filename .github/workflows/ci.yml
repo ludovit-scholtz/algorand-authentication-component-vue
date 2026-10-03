@@ -15,9 +15,10 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # the demo type-checks against the built library, so build first
+      - run: pnpm build
       - run: pnpm -r lint
       - run: pnpm -r type-check
-      - run: pnpm build
       - run: pnpm test
       - run: pnpm --filter algorand-authentication-demo exec playwright install --with-deps chromium
       # The live Biatec Wallet spec needs wallet.biatec.io and the WalletConnect relay; keep it informational.
