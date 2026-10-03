@@ -80,6 +80,8 @@ Without it the slot is always rendered and you open the sign-in screen yourself 
 | `algodPort`            | `number \| string`   | `''`                   | Port of the custom algod.                                                                          |
 | `algodToken`           | `string`             | `''`                   | Token of the custom algod.                                                                         |
 | `coverImage`           | `string`             | gradient               | Background image URL for the sign-in screen.                                                       |
+| `locale`               | `string`             | browser language       | Language tag (`sk`, `de-AT`, …). See [Localization](#localization).                                |
+| `messages`             | `Partial<AuthMessages>` | –                   | Override single UI strings of the active language.                                                 |
 
 Any other attribute (e.g. `class`) is applied to the sign-in screen root element.
 
@@ -175,6 +177,30 @@ the same account on every device and in every ARC-76-compatible app (for example
 stored: the password is requested again to sign each transaction group, and a wrong password never
 signs. Passwords must be at least 16 characters. Registration only adds a confirmation field; the
 account exists as soon as someone derives it.
+
+## Localization
+
+Every string of the component is translated into the **14 languages used by Biatec Wallet and Biatec
+DEX**: Afrikaans `af`, Čeština `cs`, Deutsch `de`, English `en`, Español `es`, Magyar `hu`, Italiano `it`,
+한국어 `ko`, Nederlands `nl`, Polski `pl`, Русский `ru`, Slovenčina `sk`, Türkçe `tr`, 中文 `zh`.
+
+```vue
+<AlgorandAuthentication arc14Realm="MyApp" locale="sk" :messages="{ signIn: 'Vitajte' }" />
+```
+
+- No `locale` → the browser's `navigator.languages`, falling back to English. Regional tags match their
+  base language (`zh-TW` → `zh`, `de-AT` → `de`). The sign-in screen and the password dialog get a matching
+  `lang` attribute.
+- `messages` overrides individual keys; placeholders are `{wallet}`, `{min}`, `{count}`, `{address}`.
+- Exports for your own pickers: `SUPPORTED_LOCALES`, `LOCALE_NAMES` (native names), `resolveLocale()`,
+  `authMessages` (the whole catalog) and `formatMessage()`; types `AuthLocale`, `AuthMessages`.
+- Errors thrown by `useAVMAuthentication()` itself (outside the component) stay in English; the strings the
+  component shows or rejects with (for example *signing cancelled*) are translated.
+- **Biatec connect dialog:** `biatec-wallet-use-wallet-client` ships its own dialog translations for
+  `af cs en es hu it nl ru sk tr` and reads `locale` when the wallet manager is created —
+  `biatec({ projectId, locale })`. The Biatec DEX languages `de ko pl zh` fall back to English inside
+  that dialog (it has its own flag switcher). The demo passes the selected language and therefore reloads
+  the page when it changes.
 
 ## Styling
 

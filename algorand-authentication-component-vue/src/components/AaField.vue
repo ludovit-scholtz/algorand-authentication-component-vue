@@ -10,8 +10,18 @@ const props = withDefaults(
     autocomplete?: string
     disabled?: boolean
     autofocus?: boolean
+    showLabel?: string
+    hideLabel?: string
   }>(),
-  { type: 'text', placeholder: '', autocomplete: 'off', disabled: false, autofocus: false }
+  {
+    showLabel: 'Show password',
+    hideLabel: 'Hide password',
+    type: 'text',
+    placeholder: '',
+    autocomplete: 'off',
+    disabled: false,
+    autofocus: false
+  }
 )
 const model = defineModel<string>({ default: '' })
 const revealed = ref(false)
@@ -45,7 +55,7 @@ onMounted(() => {
         v-if="props.type === 'password'"
         type="button"
         class="aa-reveal"
-        :aria-label="revealed ? 'Hide password' : 'Show password'"
+        :aria-label="revealed ? props.hideLabel : props.showLabel"
         :aria-pressed="revealed"
         :disabled="props.disabled"
         @click="revealed = !revealed"

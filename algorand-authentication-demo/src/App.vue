@@ -6,12 +6,24 @@ import { useNetwork, useWallet } from '@txnlab/use-wallet-vue'
 import {
   AlgorandAuthentication,
   useAVMAuthentication,
+  authMessages,
+  LOCALE_NAMES,
+  SUPPORTED_LOCALES,
   verifyArc60,
+  type AuthLocale,
   type INotification
 } from 'algorand-authentication-component-vue'
 
 import ToastHost from './components/ToastHost.vue'
 import { addToast } from './toast'
+import { currentLocale, demoMessages, format, switchLocale, type DemoMessages } from './i18n'
+
+const locale = currentLocale()
+document.documentElement.lang = locale
+const t = (key: keyof DemoMessages, vars?: Record<string, string | number>) =>
+  format(demoMessages[locale][key], vars)
+const onLanguage = (event: Event) =>
+  switchLocale((event.target as HTMLSelectElement).value as AuthLocale)
 
 const auth = useAVMAuthentication()
 const { algodClient } = useWallet()
@@ -50,7 +62,7 @@ async function signTx() {
     })
     const signed = await auth.sign([tx], [0])
     state.lastSignedTransaction = Buffer.from(signed[0]).toString('base64')
-    addToast('success', 'Transaction signed')
+    addToast('success', t('txSigned'))
   } catch (e) {
     addToast('error', e instanceof Error ? e.message : String(e))
   } finally {
@@ -71,7 +83,7 @@ async function signRawData() {
       signature: Buffer.from(res.signature).toString('base64'),
       valid: await verifyArc60(res)
     }
-    addToast('success', 'Data signed')
+    addToast('success', t('dataSigned'))
   } catch (e) {
     addToast('error', e instanceof Error ? e.message : String(e))
   } finally {
@@ -95,17 +107,31 @@ const secondaryButton =
 
 <template>
   <ToastHost />
+  <label
+    class="fixed top-3 left-3 z-[1500] flex items-center gap-2 rounded-md bg-white/90 px-2 py-1 text-xs text-gray-700 shadow"
+  >
+    {{ t('language') }}
+    <select
+      class="rounded border border-gray-300 bg-white px-1 py-0.5 text-gray-900"
+      data-testid="lang-select"
+      :value="locale"
+      @change="onLanguage"
+    >
+      <option v-for="id in SUPPORTED_LOCALES" :key="id" :value="id">{{ LOCALE_NAMES[id] }}</option>
+    </select>
+  </label>
   <AlgorandAuthentication
     arc14Realm="Demo"
     cover-image="/auth-cover.jpg"
+    :locale="locale"
     :authorizedOnlyAccess="state.requireAuthentication"
     @onNotification="onNotification"
   >
     <main class="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 px-4 py-10">
       <header class="flex items-center justify-between gap-4">
-        <h1 class="text-2xl font-bold text-gray-900">Algorand Authentication Demo</h1>
+        <h1 class="text-2xl font-bold text-gray-900">{{ t('appTitle') }}</h1>
         <label class="flex items-center gap-2 text-sm text-gray-600">
-          Network
+          {{ t('network') }}
           <select
             class="rounded-md border border-gray-300 bg-white px-2 py-1 text-gray-900"
             data-testid="network-select"
@@ -122,15 +148,15 @@ const secondaryButton =
         class="rounded-lg bg-white p-6 shadow-md"
         data-testid="unauthenticated"
       >
-        <h2 class="text-xl font-semibold">Unauthenticated Content</h2>
-        <p class="mt-2 text-gray-600">This page can be viewed without signing in.</p>
+        <h2 class="text-xl font-semibold">{{ t('unauthTitle') }}</h2>
+        <p class="mt-2 text-gray-600">{{ t('unauthText') }}</p>
         <button
           type="button"
           :class="[primaryButton, 'mt-4']"
           data-testid="login"
           @click="auth.authenticate()"
         >
-          Login
+          {{ t('login') }}
         </button>
         <button
           type="button"
@@ -138,28 +164,28 @@ const secondaryButton =
           data-testid="toggle-requirement"
           @click="state.requireAuthentication = true"
         >
-          Require authentication
+          {{ t('requireAuth') }}
         </button>
       </section>
 
       <section v-else class="flex flex-col gap-6" data-testid="authenticated">
         <div class="rounded-lg bg-white p-6 shadow-md">
-          <h2 class="text-xl font-semibold">Authenticated Content</h2>
+          <h2 class="text-xl font-semibold">{{ t('authTitle') }}</h2>
           <dl class="mt-4 grid gap-4 text-sm sm:grid-cols-[10rem_1fr]">
-            <dt class="font-medium text-gray-600">Email</dt>
+            <dt class="font-medium text-gray-600">{{ authMessages[locale].email }}</dt>
             <dd class="break-all" data-testid="auth-email">
               {{ auth.authStore.arc76email || '—' }}
             </dd>
-            <dt class="font-medium text-gray-600">Account</dt>
+            <dt class="font-medium text-gray-600">{{ t('account') }}</dt>
             <dd class="font-mono break-all" data-testid="auth-account">
               {{ auth.authStore.account }}
             </dd>
-            <dt class="font-medium text-gray-600">Wallet provider</dt>
+            <dt class="font-medium text-gray-600">{{ t('walletProvider') }}</dt>
             <dd data-testid="auth-wallet">{{ auth.authStore.wallet }}</dd>
           </dl>
 
           <label for="arc14Header" class="mt-6 block text-sm font-medium text-gray-600">
-            ARC-14 Authorization header
+            {{ t('headerLabel') }}
           </label>
           <textarea
             id="arc14Header"
@@ -177,7 +203,7 @@ const secondaryButton =
               data-testid="logout"
               @click="auth.logout()"
             >
-              Logout
+              {{ t('logout') }}
             </button>
             <button
               type="button"
@@ -185,17 +211,15 @@ const secondaryButton =
               data-testid="toggle-requirement"
               @click="state.requireAuthentication = !state.requireAuthentication"
             >
-              {{ state.requireAuthentication ? 'Disable' : 'Enable' }} authentication requirement
+              {{ state.requireAuthentication ? t('disableReq') : t('enableReq') }}
             </button>
           </div>
         </div>
 
         <div class="rounded-lg bg-white p-6 shadow-md" data-testid="sign-tx-card">
-          <h2 class="text-xl font-semibold">Sign a transaction</h2>
+          <h2 class="text-xl font-semibold">{{ t('signTxTitle') }}</h2>
           <p class="mt-1 text-sm text-gray-600">
-            Builds a zero-amount payment on the selected network and signs it with
-            <code>auth.sign([txn], [0])</code>: your wallet asks for approval, an ARC-76 account
-            asks for its password.
+            {{ t('signTxText') }}
           </p>
           <button
             type="button"
@@ -204,11 +228,11 @@ const secondaryButton =
             data-testid="sign"
             @click="signTx"
           >
-            Sign transaction
+            {{ t('signTxButton') }}
           </button>
           <template v-if="state.lastSignedTransaction">
             <label for="lastSigned" class="mt-4 block text-sm font-medium text-gray-600">
-              Signed transaction (base64)
+              {{ t('signedTxLabel') }}
             </label>
             <textarea
               id="lastSigned"
@@ -222,14 +246,12 @@ const secondaryButton =
         </div>
 
         <div class="rounded-lg bg-white p-6 shadow-md" data-testid="sign-data-card">
-          <h2 class="text-xl font-semibold">Sign raw data (ARC-60)</h2>
+          <h2 class="text-xl font-semibold">{{ t('signDataTitle') }}</h2>
           <p class="mt-1 text-sm text-gray-600">
-            Signs arbitrary bytes with <code>auth.signData(base64)</code>. The signature covers
-            <code>SHA-256(data) || SHA-256(SHA-256(domain))</code>, so it cannot be replayed on
-            another site.
+            {{ t('signDataText') }}
           </p>
           <label for="dataToSign" class="mt-4 block text-sm font-medium text-gray-600">
-            Data to sign
+            {{ t('dataLabel') }}
           </label>
           <textarea
             id="dataToSign"
@@ -245,33 +267,33 @@ const secondaryButton =
             data-testid="sign-data"
             @click="signRawData"
           >
-            Sign data
+            {{ authMessages[locale].signData }}
           </button>
           <p
             v-if="!auth.canSignData()"
             class="mt-2 text-sm text-amber-700"
             data-testid="sign-data-unsupported"
           >
-            {{ auth.authStore.wallet }} cannot sign arbitrary data.
+            {{ t('cannotSign', { wallet: auth.authStore.wallet }) }}
           </p>
           <dl
             v-if="state.dataSignature"
             class="mt-4 grid gap-2 text-sm sm:grid-cols-[8rem_1fr]"
             data-testid="data-result"
           >
-            <dt class="font-medium text-gray-600">Signer</dt>
+            <dt class="font-medium text-gray-600">{{ t('signer') }}</dt>
             <dd class="font-mono break-all" data-testid="data-signer">
               {{ state.dataSignature.signer }}
             </dd>
-            <dt class="font-medium text-gray-600">Domain</dt>
+            <dt class="font-medium text-gray-600">{{ t('domain') }}</dt>
             <dd data-testid="data-domain">{{ state.dataSignature.domain }}</dd>
-            <dt class="font-medium text-gray-600">Signature</dt>
+            <dt class="font-medium text-gray-600">{{ t('signature') }}</dt>
             <dd class="font-mono break-all text-xs" data-testid="data-signature">
               {{ state.dataSignature.signature }}
             </dd>
-            <dt class="font-medium text-gray-600">Verified</dt>
+            <dt class="font-medium text-gray-600">{{ t('verified') }}</dt>
             <dd data-testid="data-valid">
-              {{ state.dataSignature.valid ? 'valid ✓' : 'INVALID ✗' }}
+              {{ state.dataSignature.valid ? t('valid') : t('invalid') }}
             </dd>
           </dl>
         </div>

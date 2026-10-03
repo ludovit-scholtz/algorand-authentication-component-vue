@@ -17,6 +17,7 @@ import { mnemonic } from '@txnlab/use-wallet-mnemonic'
 import { pera } from '@txnlab/use-wallet-pera'
 
 import App from './App.vue'
+import { currentLocale } from './i18n'
 
 // Wallet SDKs (Pera, Defly, WalletConnect) still expect these Node-style globals.
 const globals = window as unknown as Record<string, unknown>
@@ -34,6 +35,8 @@ const networks = new NetworkConfigBuilder()
 const wallets: WalletAdapterConfig[] = [
   biatec({
     projectId,
+    // language of Biatec's built-in connect dialog (it supports af cs en es hu it nl ru sk tr)
+    locale: currentLocale(),
     metadata: {
       name: 'Algorand Authentication Demo',
       description: 'ARC-14 authentication with use-wallet 5 and ARC-76 accounts',

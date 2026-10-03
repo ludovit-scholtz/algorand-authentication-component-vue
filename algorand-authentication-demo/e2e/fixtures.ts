@@ -73,7 +73,8 @@ export function expectValidArc14Header(header: string, address: string, realm: s
 export async function signInWithArc76(page: Page, email = ARC76_EMAIL, password = ARC76_PASSWORD) {
   await page.locator('#e').fill(email)
   await page.locator('#p').fill(password)
-  await page.getByRole('button', { name: 'Continue' }).click()
+  // language independent: the primary submit button of the form
+  await page.locator('form button[type="submit"]').click()
 }
 
 /** Independently verifies an ARC-60 signature: Ed25519 over SHA-256(data) || SHA-256(authenticatorData = SHA-256(domain)). */

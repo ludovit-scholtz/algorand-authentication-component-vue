@@ -9,6 +9,7 @@ import AaField from './AaField.vue'
 import arc14, { arc14Header } from '../scripts/arc14'
 import { ARC76_MIN_PASSWORD_LENGTH, deriveArc76Account, isValidEmail } from '../scripts/arc76'
 import { signArc60 } from '../scripts/arc60'
+import { format, messages as catalog, resolveLocale, type AuthMessages } from '../i18n/messages'
 import { authStore } from '../store/authStore'
 import type { INotification } from '../types'
 
@@ -28,6 +29,10 @@ const props = withDefaults(
     authorizedOnlyAccess?: boolean
     /** Optional background image URL for the sign-in screen. */
     coverImage?: string
+    /** BCP-47 language tag (`sk`, `de-AT`, ...). Default: the browser language, falling back to English. */
+    locale?: string
+    /** Override individual UI strings of the active language. */
+    messages?: Partial<AuthMessages>
   }>(),
   {
     wallets: () => [],
@@ -35,7 +40,9 @@ const props = withDefaults(
     algodToken: undefined,
     algodPort: undefined,
     authorizedOnlyAccess: false,
-    coverImage: undefined
+    coverImage: undefined,
+    locale: undefined,
+    messages: undefined
   }
 )
 
@@ -72,6 +79,10 @@ const screenStyle = computed(() =>
   props.coverImage ? { '--aa-cover': `url("${props.coverImage}")` } : undefined
 )
 
+const language = computed(() => resolveLocale(props.locale))
+const t = (key: keyof AuthMessages, vars?: Record<string, string | number>) =>
+  format(props.messages?.[key] ?? catalog[language.value][key], vars)
+
 const notify = (notification: INotification) => emit('onNotification', notification)
 const errorMessage = (e: unknown) => (e instanceof Error ? e.message : String(e))
 
@@ -84,12 +95,12 @@ const shortAddress = (address: string) => `${address.slice(0, 6)}…${address.sl
 
 function formError(): string | undefined {
   authStore.emailIsValid = isValidEmail(authStore.arc76email)
-  if (!authStore.emailIsValid) return 'Email is not valid'
+  if (!authStore.emailIsValid) return t('errEmailInvalid')
   if (password.value.length < ARC76_MIN_PASSWORD_LENGTH)
-    return `Password must be at least ${ARC76_MIN_PASSWORD_LENGTH} chars long`
+    return t('errPasswordLength', { min: ARC76_MIN_PASSWORD_LENGTH })
   if (authStore.inRegistration) {
-    if (password2.value && password.value !== password2.value) return 'Passwords do not match'
-    if (password.value && !password2.value) return 'Please fill in the password confirmation field'
+    if (password2.value && password.value !== password2.value) return t('errPasswordsMismatch')
+    if (password.value && !password2.value) return t('errConfirmRequired')
   }
   return undefined
 }
@@ -134,7 +145,7 @@ async function authenticateWithWallet(walletId: string, address: string) {
   try {
     const signed = await signTransactions([txn])
     const first = signed[0]
-    if (!first) throw new Error('The wallet did not return a signature')
+    if (!first) throw new Error(t('errNoSignature'))
     completeLogin(address, walletId, arc14Header(first))
   } finally {
     authStore.inWalletSignature = false
@@ -157,7 +168,7 @@ async function signInWithWallet(wallet: Wallet) {
       const accounts = await wallet.connect()
       address = accounts[0]?.address
     }
-    if (!address) throw new Error('The wallet did not return an account')
+    if (!address) throw new Error(t('errNoAccount'))
     await authenticateWithWallet(wallet.id, address)
   } catch (e) {
     walletError.value = errorMessage(e)
@@ -178,7 +189,7 @@ async function disconnectWallet(wallet: Wallet) {
 }
 
 function cancelSignature() {
-  authStore.signaturePromise?.reject(new Error('Signing cancelled by user'))
+  authStore.signaturePromise?.reject(new Error(t('errCancelled')))
   password.value = ''
   signError.value = ''
 }
@@ -190,7 +201,7 @@ async function signWithArc76() {
   try {
     const account = await deriveArc76Account(authStore.arc76email, password.value)
     if (account.addr.toString() !== authStore.account) {
-      signError.value = 'Password is invalid'
+      signError.value = t('errPasswordInvalid')
       notify({ severity: 'error', message: signError.value })
       return
     }
@@ -213,46 +224,47 @@ async function signWithArc76() {
     v-if="showAuthentication"
     v-bind="$attrs"
     class="aa-root aa-screen"
+    :lang="language"
     :style="screenStyle"
     data-testid="aa-screen"
   >
     <div class="aa-panel aa-panel--form" :class="{ 'aa-panel--full': authStore.inRegistration }">
       <form class="aa-card" novalidate @submit.prevent="authArc76Auth">
         <h2 class="aa-title" data-testid="aa-title">
-          {{ authStore.inRegistration ? 'Registration' : 'Sign in' }}
+          {{ authStore.inRegistration ? t('registration') : t('signIn') }}
         </h2>
         <p class="aa-subtitle">
-          {{
-            authStore.inRegistration
-              ? 'Create an ARC-76 account from your email and a strong password.'
-              : 'Use your email and password, or connect a wallet.'
-          }}
+          {{ authStore.inRegistration ? t('subtitleRegistration') : t('subtitleSignIn') }}
         </p>
 
         <AaField
           id="e"
           v-model="authStore.arc76email"
-          label="Email"
+          :label="t('email')"
           type="email"
           autocomplete="username"
-          placeholder="Please write your email"
+          :placeholder="t('emailPlaceholder')"
         />
         <AaField
           id="p"
           v-model="password"
-          label="Password"
+          :label="t('password')"
+          :show-label="t('showPassword')"
+          :hide-label="t('hidePassword')"
           type="password"
           :autocomplete="authStore.inRegistration ? 'new-password' : 'current-password'"
-          placeholder="Please write your password"
+          :placeholder="t('passwordPlaceholder')"
         />
         <AaField
           v-if="authStore.inRegistration"
           id="p2"
           v-model="password2"
-          label="Password confirmation"
+          :label="t('passwordConfirmation')"
+          :show-label="t('showPassword')"
+          :hide-label="t('hidePassword')"
           type="password"
           autocomplete="new-password"
-          placeholder="Please repeat your password"
+          :placeholder="t('passwordRepeatPlaceholder')"
         />
 
         <AaAlert v-if="password && currentFormError" data-testid="aa-form-error">
@@ -261,7 +273,7 @@ async function signWithArc76() {
 
         <button type="submit" class="aa-btn aa-btn--primary aa-btn--block" :disabled="!canSubmit">
           <span v-if="busy === 'arc76'" class="aa-spinner" aria-hidden="true" />
-          {{ busy === 'arc76' ? 'Deriving key…' : 'Continue' }}
+          {{ busy === 'arc76' ? t('derivingKey') : t('continue') }}
         </button>
 
         <div class="aa-actions">
@@ -271,7 +283,7 @@ async function signWithArc76() {
               class="aa-btn aa-btn--secondary"
               @click="authStore.inRegistration = false"
             >
-              Back to sign in
+              {{ t('backToSignIn') }}
             </button>
           </template>
           <template v-else>
@@ -280,14 +292,14 @@ async function signWithArc76() {
               class="aa-btn aa-btn--secondary"
               @click="authStore.inRegistration = true"
             >
-              Register
+              {{ t('register') }}
             </button>
             <button
               type="button"
               class="aa-btn aa-btn--secondary"
               @click="authStore.inAuthentication = false"
             >
-              Go back
+              {{ t('goBack') }}
             </button>
           </template>
         </div>
@@ -296,10 +308,12 @@ async function signWithArc76() {
 
     <div v-if="!authStore.inRegistration" class="aa-panel aa-panel--wallets">
       <div class="aa-wallets" data-testid="aa-wallets">
-        <h2 class="aa-wallets-title">Or connect with</h2>
+        <h2 class="aa-wallets-title">{{ t('orConnectWith') }}</h2>
 
         <div v-if="pendingWallet" class="aa-session" data-testid="aa-session">
-          <p class="aa-session-label">Connected with {{ pendingWallet.metadata.name }}</p>
+          <p class="aa-session-label">
+            {{ t('connectedWith', { wallet: pendingWallet.metadata.name }) }}
+          </p>
           <p class="aa-session-address" :title="activeAddress ?? ''">
             {{ activeAddress ? shortAddress(activeAddress) : '' }}
           </p>
@@ -311,10 +325,10 @@ async function signWithArc76() {
             @click="signInWithWallet(pendingWallet)"
           >
             <span v-if="busy" class="aa-spinner aa-spinner--dark" aria-hidden="true" />
-            Sign in with {{ pendingWallet.metadata.name }}
+            {{ t('signInWith', { wallet: pendingWallet.metadata.name }) }}
           </button>
           <button type="button" class="aa-link" @click="disconnectWallet(pendingWallet)">
-            Disconnect from {{ pendingWallet.metadata.name }}
+            {{ t('disconnectFrom', { wallet: pendingWallet.metadata.name }) }}
           </button>
         </div>
 
@@ -331,7 +345,7 @@ async function signWithArc76() {
               <img
                 class="aa-wallet-icon"
                 :src="wallet.metadata.icon"
-                :alt="`${wallet.metadata.name} logo`"
+                :alt="t('walletLogo', { wallet: wallet.metadata.name })"
                 width="36"
                 height="36"
               />
@@ -340,7 +354,7 @@ async function signWithArc76() {
                 v-if="busy === `wallet:${wallet.id}`"
                 class="aa-spinner"
                 role="status"
-                aria-label="Connecting"
+                :aria-label="t('connecting')"
               />
               <svg
                 v-else
@@ -362,7 +376,7 @@ async function signWithArc76() {
             </button>
           </li>
         </ul>
-        <p v-else class="aa-empty">No wallets are available for this network.</p>
+        <p v-else class="aa-empty">{{ t('noWallets') }}</p>
 
         <AaAlert v-if="walletError" data-testid="aa-wallet-error">{{ walletError }}</AaAlert>
       </div>
@@ -376,6 +390,7 @@ async function signWithArc76() {
     v-bind="showAuthentication ? {} : $attrs"
     class="aa-root aa-overlay"
     data-testid="aa-sign-dialog"
+    :lang="language"
   >
     <form
       class="aa-card aa-dialog"
@@ -387,28 +402,33 @@ async function signWithArc76() {
       @keydown.esc="cancelSignature"
     >
       <h2 id="aa-sign-title" class="aa-title">
-        <template v-if="authStore.dataToSign">Sign data</template>
+        <template v-if="authStore.dataToSign">{{ t('signData') }}</template>
         <template v-else>
-          Sign {{ authStore.usignedTxs.length }}
-          {{ authStore.usignedTxs.length === 1 ? 'transaction' : 'transactions' }}
+          {{
+            authStore.usignedTxs.length === 1
+              ? t('signOneTransaction')
+              : t('signManyTransactions', { count: authStore.usignedTxs.length })
+          }}
         </template>
       </h2>
       <p class="aa-subtitle">
-        Enter your password to sign as {{ shortAddress(authStore.account) }}.
+        {{ t('signDialogSubtitle', { address: shortAddress(authStore.account) }) }}
       </p>
       <AaField
         id="aa-sign-password"
         v-model="password"
-        label="Password"
+        :label="t('password')"
+        :show-label="t('showPassword')"
+        :hide-label="t('hidePassword')"
         type="password"
         autocomplete="current-password"
-        placeholder="Please write your password"
+        :placeholder="t('passwordPlaceholder')"
         autofocus
       />
       <AaAlert v-if="signError" data-testid="aa-sign-error">{{ signError }}</AaAlert>
       <div class="aa-actions aa-actions--end">
         <button type="button" class="aa-btn aa-btn--secondary" @click="cancelSignature">
-          Cancel
+          {{ t('cancel') }}
         </button>
         <button
           type="submit"
@@ -416,7 +436,7 @@ async function signWithArc76() {
           :disabled="password.length < ARC76_MIN_PASSWORD_LENGTH || !!busy"
         >
           <span v-if="busy === 'sign'" class="aa-spinner" aria-hidden="true" />
-          {{ busy === 'sign' ? 'Signing…' : 'Continue' }}
+          {{ busy === 'sign' ? t('signing') : t('continue') }}
         </button>
       </div>
     </form>

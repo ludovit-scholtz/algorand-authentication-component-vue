@@ -13,6 +13,7 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 import { expectValidArc14Header } from './fixtures'
 import { decodeHeader, verifyArc60Signature } from './fixtures'
+import { SUPPORTED_LOCALES } from '../../algorand-authentication-component-vue/src/i18n/messages'
 
 const WALLET_URL = 'https://wallet.biatec.io/'
 const REALM = 'Demo'
@@ -200,4 +201,48 @@ test.describe('Biatec Wallet', () => {
     await expect(dapp.getByTestId('authenticated')).toHaveCount(0)
     await expect(dapp.getByTestId('aa-screen')).toBeVisible()
   })
+})
+
+/**
+ * Biatec's built-in connect dialog is localized by biatec-wallet-use-wallet-client (10 languages).
+ * The demo passes its selected language; the four Biatec DEX languages the dialog does not ship yet
+ * (de, ko, pl, zh) fall back to English while the rest of the demo is still translated.
+ */
+const DIALOG_TITLES: Record<string, string> = {
+  af: 'Koppel Biatec Wallet',
+  cs: 'Připojit Biatec Wallet',
+  en: 'Connect Biatec Wallet',
+  es: 'Conectar Biatec Wallet',
+  hu: 'Biatec Wallet csatlakoztatása',
+  it: 'Connetti Biatec Wallet',
+  nl: 'Biatec Wallet verbinden',
+  ru: 'Подключить Biatec Wallet',
+  sk: 'Pripojiť Biatec Wallet',
+  tr: "Biatec Wallet'ı bağla"
+}
+
+test.describe('Biatec connect dialog language', () => {
+  for (const locale of SUPPORTED_LOCALES) {
+    const title = DIALOG_TITLES[locale] ?? DIALOG_TITLES.en
+    const note = locale in DIALOG_TITLES ? '' : ' (falls back to English)'
+
+    test(`${locale}${note}`, async ({ context }) => {
+      await context.route(`${DAPP_ORIGIN}/**`, async (route) => {
+        const url = route.request().url().replace(DAPP_ORIGIN, BASE_URL)
+        await route.fulfill({ response: await route.fetch({ url }) })
+      })
+      const page = await context.newPage()
+      await page.goto(`${DAPP_ORIGIN}/?lang=${locale}`)
+      // the component's own wallet button is translated, the wallet name is not
+      await expect(page.getByTestId('aa-wallet-biatec')).toContainText('Biatec Wallet')
+      await openBiatecDialog(page)
+      await expect(page.getByText(title, { exact: true })).toBeVisible()
+      // the dialog offers its own language switcher with the flags of every supported language
+      await expect(page.locator('.bcd-locale')).toHaveCount(Object.keys(DIALOG_TITLES).length)
+      await expect(page.locator('.bcd-locale--active')).toHaveAttribute(
+        'data-locale',
+        locale in DIALOG_TITLES ? locale : 'en'
+      )
+    })
+  }
 })

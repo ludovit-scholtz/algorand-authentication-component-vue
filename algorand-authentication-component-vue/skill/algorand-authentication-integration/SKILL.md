@@ -124,9 +124,18 @@ Choose the mode:
 | Custom algod instead of the active network's      | `algodHost`, `algodPort`, `algodToken`.                                                                |
 | Brand look                                        | Override `--aa-*` CSS variables on `.aa-root` or pass `coverImage`; see README "Styling".              |
 
-Props: `arc14Realm` (required), `authorizedOnlyAccess`, `wallets`, `algodHost`, `algodPort`, `algodToken`, `coverImage`.
+Props: `arc14Realm` (required), `authorizedOnlyAccess`, `wallets`, `algodHost`, `algodPort`, `algodToken`, `coverImage`, `locale`, `messages`.
 Events: `onNotification`, `authenticated`. There is **no** `onStateChange`, `useDemoMnemonics` or `class` prop in v2
 (attributes like `class` fall through to the screen root).
+
+### Localization
+
+Built in for `af cs de en es hu it ko nl pl ru sk tr zh` (the languages of Biatec Wallet + Biatec DEX).
+Default = browser language, English fallback. To follow the app's own language pass `:locale="appLocale"`;
+override single strings with `:messages="{ signIn: '…' }"`. Biatec's connect dialog is configured separately:
+`biatec({ projectId, locale: appLocale })` (supports `af cs en es hu it nl ru sk tr`, others show English) and reads
+the locale once at startup, so changing language at runtime needs a reload for that dialog. Do not translate the
+component by hand and do not hardcode English strings next to it.
 
 ## 4. Use the session
 
