@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build:lib": "pnpm --filter algorand-authentication-component-vue build",
+    "build": "pnpm build:lib && run-p type-check \"build-only {@}\" --",
     "preview": "vite preview --port 4173 --strictPort",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json && vue-tsc --noEmit -p tsconfig.node.json",
