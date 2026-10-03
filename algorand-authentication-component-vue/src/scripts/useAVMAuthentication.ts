@@ -60,6 +60,9 @@ export const useAVMAuthentication = (): IAVMAuthentication => {
     transactionSigner?: TransactionSigner
   ): Promise<Uint8Array[]> => {
     if (authStore.wallet === 'arc76') {
+      if (authStore.signaturePromise) {
+        throw new Error('Another signing request is already waiting for the ARC-76 password')
+      }
       authStore.usignedTxs = txnGroup.map((txn) => algosdk.encodeUnsignedTransaction(txn))
       authStore.signaturePromise = createDeferred<Uint8Array[]>()
       authStore.inArc76Signature = true

@@ -172,7 +172,9 @@ test.describe('ARC-76 account', () => {
     await signInWithArc76(page)
     await expect(page.getByTestId('authenticated')).toBeVisible({ timeout: 30_000 })
     await page.getByTestId('sign').click()
-    await page.getByRole('dialog').locator('#aa-sign-password').press('Escape')
+    // the password field is focused when the dialog opens, so Escape works without a click
+    await expect(page.locator('#aa-sign-password')).toBeFocused()
+    await page.keyboard.press('Escape')
     await expect(page.getByRole('dialog')).toBeHidden()
   })
 })

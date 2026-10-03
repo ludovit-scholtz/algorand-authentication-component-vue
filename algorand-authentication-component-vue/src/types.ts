@@ -1,4 +1,3 @@
-/// <reference types="vite/client" />
 export type Deferred<T> = {
   promise: Promise<T>
   resolve: (value: T) => void
@@ -32,7 +31,9 @@ interface IAuthenticationStore {
   arc76email: string
   /** @deprecated kept for 1.x compatibility, unused in 2.x. */
   m: string
+  /** @deprecated unused in 2.x - passwords are kept in component state, never in the store. */
   password: string
+  /** @deprecated see `password`. */
   password2: string
   name: string
   emailIsValid: boolean

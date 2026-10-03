@@ -45,6 +45,9 @@ const emit = defineEmits<{
 
 const { activeWallet, activeAddress, availableWallets, algodClient, signTransactions } = useWallet()
 
+// Passwords stay in component state - never in the shared (devtools-visible) store
+const password = ref('')
+const password2 = ref('')
 const busy = ref<'' | 'arc76' | 'sign' | `wallet:${string}`>('')
 const signError = ref('')
 const walletError = ref('')
@@ -81,21 +84,18 @@ const shortAddress = (address: string) => `${address.slice(0, 6)}…${address.sl
 function formError(): string | undefined {
   authStore.emailIsValid = isValidEmail(authStore.arc76email)
   if (!authStore.emailIsValid) return 'Email is not valid'
-  if (authStore.password.length < ARC76_MIN_PASSWORD_LENGTH)
+  if (password.value.length < ARC76_MIN_PASSWORD_LENGTH)
     return `Password must be at least ${ARC76_MIN_PASSWORD_LENGTH} chars long`
   if (authStore.inRegistration) {
-    if (authStore.password2 && authStore.password !== authStore.password2)
-      return 'Passwords do not match'
-    if (authStore.password && !authStore.password2)
-      return 'Please fill in the password confirmation field'
+    if (password2.value && password.value !== password2.value) return 'Passwords do not match'
+    if (password.value && !password2.value) return 'Please fill in the password confirmation field'
   }
   return undefined
 }
 
 const currentFormError = computed(() => formError())
 const canSubmit = computed(
-  () =>
-    !currentFormError.value && !(authStore.inRegistration && !authStore.password2) && !busy.value
+  () => !currentFormError.value && !(authStore.inRegistration && !password2.value) && !busy.value
 )
 
 function completeLogin(account: string, wallet: string, header: string) {
@@ -104,8 +104,8 @@ function completeLogin(account: string, wallet: string, header: string) {
   authStore.wallet = wallet
   authStore.arc14Header = header
   authStore.isAuthenticated = true
-  authStore.password = ''
-  authStore.password2 = ''
+  password.value = ''
+  password2.value = ''
   authStore.inRegistration = false
   authStore.inAuthentication = false
   emit('authenticated', { account, wallet, arc14Header: header })
@@ -115,7 +115,7 @@ async function authArc76Auth() {
   if (!canSubmit.value) return
   busy.value = 'arc76'
   try {
-    const account = await deriveArc76Account(authStore.arc76email, authStore.password)
+    const account = await deriveArc76Account(authStore.arc76email, password.value)
     const params = await getAlgod().getTransactionParams().do()
     const signed = arc14(props.arc14Realm, account.addr.toString(), params).signTxn(account.sk)
     completeLogin(account.addr.toString(), 'arc76', arc14Header(signed))
@@ -178,16 +178,16 @@ async function disconnectWallet(wallet: Wallet) {
 
 function cancelSignature() {
   authStore.signaturePromise?.reject(new Error('Signing cancelled by user'))
-  authStore.password = ''
+  password.value = ''
   signError.value = ''
 }
 
 async function signWithArc76() {
-  if (busy.value || authStore.password.length < ARC76_MIN_PASSWORD_LENGTH) return
+  if (busy.value || password.value.length < ARC76_MIN_PASSWORD_LENGTH) return
   busy.value = 'sign'
   signError.value = ''
   try {
-    const account = await deriveArc76Account(authStore.arc76email, authStore.password)
+    const account = await deriveArc76Account(authStore.arc76email, password.value)
     if (account.addr.toString() !== authStore.account) {
       signError.value = 'Password is invalid'
       notify({ severity: 'error', message: signError.value })
@@ -196,7 +196,7 @@ async function signWithArc76() {
     const signed = authStore.usignedTxs.map((tx) =>
       algosdk.decodeUnsignedTransaction(tx).signTxn(account.sk)
     )
-    authStore.password = ''
+    password.value = ''
     authStore.signaturePromise?.resolve(signed)
   } catch (e) {
     signError.value = errorMessage(e)
@@ -238,7 +238,7 @@ async function signWithArc76() {
         />
         <AaField
           id="p"
-          v-model="authStore.password"
+          v-model="password"
           label="Password"
           type="password"
           :autocomplete="authStore.inRegistration ? 'new-password' : 'current-password'"
@@ -247,14 +247,14 @@ async function signWithArc76() {
         <AaField
           v-if="authStore.inRegistration"
           id="p2"
-          v-model="authStore.password2"
+          v-model="password2"
           label="Password confirmation"
           type="password"
           autocomplete="new-password"
           placeholder="Please repeat your password"
         />
 
-        <AaAlert v-if="authStore.password && currentFormError" data-testid="aa-form-error">
+        <AaAlert v-if="password && currentFormError" data-testid="aa-form-error">
           {{ currentFormError }}
         </AaAlert>
 
@@ -394,7 +394,7 @@ async function signWithArc76() {
       </p>
       <AaField
         id="aa-sign-password"
-        v-model="authStore.password"
+        v-model="password"
         label="Password"
         type="password"
         autocomplete="current-password"
@@ -409,7 +409,7 @@ async function signWithArc76() {
         <button
           type="submit"
           class="aa-btn aa-btn--primary"
-          :disabled="authStore.password.length < ARC76_MIN_PASSWORD_LENGTH || !!busy"
+          :disabled="password.length < ARC76_MIN_PASSWORD_LENGTH || !!busy"
         >
           <span v-if="busy === 'sign'" class="aa-spinner" aria-hidden="true" />
           {{ busy === 'sign' ? 'Signing…' : 'Continue' }}

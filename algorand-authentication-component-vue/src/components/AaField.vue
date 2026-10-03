@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -15,6 +15,12 @@ const props = withDefaults(
 )
 const model = defineModel<string>({ default: '' })
 const revealed = ref(false)
+const input = ref<HTMLInputElement | null>(null)
+
+// the native `autofocus` attribute is ignored for elements inserted after page load
+onMounted(() => {
+  if (props.autofocus) input.value?.focus()
+})
 </script>
 
 <template>
@@ -23,6 +29,7 @@ const revealed = ref(false)
     <div class="aa-input-wrap">
       <input
         :id="props.id"
+        ref="input"
         v-model="model"
         class="aa-input"
         :class="{ 'aa-input--toggle': props.type === 'password' }"

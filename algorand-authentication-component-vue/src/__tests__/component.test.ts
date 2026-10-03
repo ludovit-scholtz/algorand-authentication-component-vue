@@ -99,7 +99,6 @@ describe('<AlgorandAuthentication>', () => {
     await vi.waitFor(() => expect(authStore.isAuthenticated).toBe(true), { timeout: 20_000 })
     expect(authStore.wallet).toBe('arc76')
     expect(authStore.arc14Header.startsWith('SigTx ')).toBe(true)
-    expect(authStore.password).toBe('')
     await nextTick()
     expect(w.find('[data-testid="content"]').exists()).toBe(true)
     expect(w.emitted('authenticated')).toHaveLength(1)
