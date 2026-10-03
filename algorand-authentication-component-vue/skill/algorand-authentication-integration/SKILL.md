@@ -17,7 +17,7 @@ Portable: works as a Claude Code skill, a Cursor/Windsurf rule, Copilot instruct
 - `<AlgorandAuthentication>` — full-screen two-panel sign-in (email/password | wallet list) that replaces
   its slot until the user is authenticated (`authorizedOnlyAccess`), plus an ARC-76 password dialog for signing.
 - `useAVMAuthentication()` — reactive `authStore` (`isAuthenticated`, `account`, `wallet`, `arc14Header`, …),
-  `authenticate()`, `logout()`, `sign()`.
+  `authenticate()`, `logout()`, `sign()` (transactions), `signData()` (ARC-60 raw data), `canSignData()`.
 - Result of a sign-in: `authStore.arc14Header` = `SigTx <base64>`; send it as the HTTP `Authorization`
   header; the backend verifies it (step 7). No cookies, no secrets, no passwords leave the browser.
 
@@ -158,6 +158,10 @@ try {
 ```
 
 - Always use `auth.sign(...)` (not `useWallet().transactionSigner` directly) so ARC-76 users get the password dialog.
+- Raw data (ARC-60): `const res = await auth.signData(btoa(message))` → `{ signer, domain, authenticatorData, signature }`;
+  check `auth.canSignData()` first (wallets must support it; ARC-76 accounts always do). The signed bytes are
+  `SHA-256(data) || SHA-256(authenticatorData)`; `verifyArc60(res)` checks it client-side. Biatec Wallet rejects it when
+  `location.host` contains a port (e.g. `localhost:5173`) — test on a port-less host.
 - `indexesToSign` lists the group positions owned by the signed-in account.
 - ARC-76 users re-enter their password for every signing request; cancelling rejects with
   `Signing cancelled by user`.

@@ -8,7 +8,8 @@ import {
   decodeHeader,
   expectValidArc14Header,
   mockAlgod,
-  signInWithArc76
+  signInWithArc76,
+  verifyArc60Signature
 } from './fixtures'
 
 const REALM = 'Demo'
@@ -156,6 +157,57 @@ test.describe('ARC-76 account', () => {
     await expect(page.getByTestId('toast-success')).toHaveText(/Transaction signed/)
   })
 
+  test('signs raw data (ARC-60) after re-entering the password', async ({ page }) => {
+    await signInWithArc76(page)
+    await expect(page.getByTestId('authenticated')).toBeVisible({ timeout: 30_000 })
+
+    const text = 'Hello from Playwright ✓'
+    await page.getByTestId('data-input').fill(text)
+    await page.getByTestId('sign-data').click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toContainText('Sign data')
+
+    await dialog.locator('#aa-sign-password').fill('wrong-wrong-wrong-wrong-1')
+    await dialog.getByRole('button', { name: 'Continue' }).click()
+    await expect(page.getByTestId('aa-sign-error')).toHaveText('Password is invalid', {
+      timeout: 30_000
+    })
+    await dialog.locator('#aa-sign-password').fill(ARC76_PASSWORD)
+    await dialog.getByRole('button', { name: 'Continue' }).click()
+    await expect(dialog).toBeHidden({ timeout: 30_000 })
+
+    await expect(page.getByTestId('data-signer')).toHaveText(address)
+    await expect(page.getByTestId('data-valid')).toHaveText('valid ✓')
+    const domain = await page.getByTestId('data-domain').innerText()
+    expect(domain).toBe(new URL(page.url()).host)
+    expect(
+      verifyArc60Signature({
+        address,
+        dataBase64: Buffer.from(text, 'utf-8').toString('base64'),
+        domain,
+        signatureBase64: await page.getByTestId('data-signature').innerText()
+      })
+    ).toBe(true)
+    // a signature for different data must not verify
+    expect(
+      verifyArc60Signature({
+        address,
+        dataBase64: Buffer.from('other', 'utf-8').toString('base64'),
+        domain,
+        signatureBase64: await page.getByTestId('data-signature').innerText()
+      })
+    ).toBe(false)
+  })
+
+  test('cancelling the data signing dialog shows an error', async ({ page }) => {
+    await signInWithArc76(page)
+    await expect(page.getByTestId('authenticated')).toBeVisible({ timeout: 30_000 })
+    await page.getByTestId('sign-data').click()
+    await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click()
+    await expect(page.getByTestId('toast-error')).toHaveText(/Signing cancelled by user/)
+    await expect(page.getByTestId('data-result')).toHaveCount(0)
+  })
+
   test('cancelling the password dialog rejects the signing request', async ({ page }) => {
     await signInWithArc76(page)
     await expect(page.getByTestId('authenticated')).toBeVisible({ timeout: 30_000 })
@@ -219,6 +271,10 @@ test.describe('wallet sign-in (use-wallet 5 mnemonic adapter, testnet)', () => {
     await expect(page.getByRole('dialog')).toHaveCount(0)
     const signed = decodeHeader(`SigTx ${await page.getByTestId('signed-tx').inputValue()}`)
     expect(signed.txn.sender.toString()).toBe(walletAddress)
+
+    // the mnemonic adapter cannot sign arbitrary data, so the demo says so instead of failing
+    await expect(page.getByTestId('sign-data')).toBeDisabled()
+    await expect(page.getByTestId('sign-data-unsupported')).toBeVisible()
 
     await page.getByTestId('logout').click()
     await expect(page.getByTestId('aa-screen')).toBeVisible()

@@ -20,7 +20,7 @@ pnpm add algorand-authentication-component-vue @txnlab/use-wallet-vue algosdk vu
 pnpm add @txnlab/use-wallet-pera @txnlab/use-wallet-defly biatec-wallet-use-wallet-client
 ```
 
-Peer dependencies: `vue ^3.5`, `@txnlab/use-wallet-vue ^5`, `algosdk ^3.5`.
+Peer dependencies: `vue ^3.5`, `@txnlab/use-wallet-vue ^5`, `algosdk ^3.5` (plus a small `tweetnacl` dependency for ARC-60).
 
 ## Quick start
 
@@ -96,7 +96,7 @@ transaction the component shows a password dialog on top of the slot.
 Call it inside `setup()` of a component under `WalletManagerPlugin`.
 
 ```ts
-const { authStore, authenticate, logout, sign } = useAVMAuthentication()
+const { authStore, authenticate, logout, sign, signData, canSignData } = useAVMAuthentication()
 ```
 
 | Member              | Description                                                                                             |
@@ -111,12 +111,26 @@ const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({ sender, receiv
 const [signed] = await auth.sign([txn], [0]) // Uint8Array, ready for algod.sendRawTransaction
 ```
 
+| `signData(base64, metadata?)` | ARC-60 raw data signing. Wallets sign through use-wallet's `signData` (if `canSignData()`), ARC-76 accounts after a password prompt. Resolves with `{ data, signer, domain, authenticatorData, signature }`. |
+| `canSignData()`     | `true` for ARC-76 accounts and for wallets that support ARC-60 (Biatec does; the mnemonic adapter does not). |
+
+```ts
+const res = await auth.signData(btoa('Sign in to MyApp at 2026-10-03')) // data is base64
+await verifyArc60(res) // true
+```
+
+The signature is Ed25519 over `SHA-256(data) || SHA-256(authenticatorData)` with
+`authenticatorData = SHA-256(location.host)` (ARC-60, AUTH scope), so it is bound to your site. Biatec
+Wallet additionally requires `location.host` to equal the hostname of the page that connected, which
+means ARC-60 signing works on `https://your.domain` but is rejected on `localhost:<port>` (the port is
+part of `host`). Test it behind a port-less host — see the live Playwright spec.
+
 `authStore` fields: `isAuthenticated`, `account`, `wallet` (`'arc76'` or a use-wallet id),
 `arc14Header` (`SigTx <base64>`), `arc76email`, `inAuthentication`, `inWalletSignature`,
 `inArc76Signature`, `count` (incremented on every login/logout — handy to `watch`).
 
-Also exported: `arc14(realm, address, suggestedParams)`, `arc14Header(signedTxn)` and
-`deriveArc76Account(email, password)`.
+Also exported: `arc14(realm, address, suggestedParams)`, `arc14Header(signedTxn)`,
+`deriveArc76Account(email, password)`, `signArc60(base64, account)` and `verifyArc60(response)`.
 
 ## Verifying the header on your backend
 

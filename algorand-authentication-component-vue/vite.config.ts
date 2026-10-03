@@ -17,7 +17,7 @@ export default defineConfig({
       cssFileName: 'algorand-authentication-component-vue'
     },
     rollupOptions: {
-      external: ['vue', '@txnlab/use-wallet-vue', '@txnlab/use-wallet', 'algosdk', 'buffer'],
+      external: ['vue', '@txnlab/use-wallet-vue', '@txnlab/use-wallet', 'algosdk', 'buffer', 'tweetnacl'],
       output: {
         globals: {
           vue: 'Vue',

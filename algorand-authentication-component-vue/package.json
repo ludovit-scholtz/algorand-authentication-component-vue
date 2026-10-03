@@ -3,7 +3,16 @@
   "version": "2.0.0",
   "description": "Vue 3 authentication component for Algorand / AVM: ARC-14 sign-in with use-wallet 5 wallets or ARC-76 email + password accounts.",
   "type": "module",
-  "keywords": ["algorand", "avm", "vue", "authentication", "arc14", "arc76", "use-wallet", "biatec"],
+  "keywords": [
+    "algorand",
+    "avm",
+    "vue",
+    "authentication",
+    "arc14",
+    "arc76",
+    "use-wallet",
+    "biatec"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/scholtz/algorand-authentication-component-vue.git"
@@ -46,7 +55,8 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "buffer": "^6.0.3"
+    "buffer": "^6.0.3",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

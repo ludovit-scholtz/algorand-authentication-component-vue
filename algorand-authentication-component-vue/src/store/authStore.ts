@@ -17,6 +17,7 @@ const defaultState = (): IAuthenticationStore => ({
   inRegistration: false,
   inRegistrationToSign: false,
   usignedTxs: [] as Uint8Array[],
+  dataToSign: '',
   inArc76Signature: false,
   inWalletSignature: false,
   signaturePromise: null as Deferred<Uint8Array[]> | null

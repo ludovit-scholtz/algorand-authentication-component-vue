@@ -20,7 +20,7 @@ What to look at:
 - [`src/main.ts`](src/main.ts) — wallet registration for use-wallet 5, extra networks (Voi, Aramid), Node globals
   required by the wallet SDKs.
 - [`src/App.vue`](src/App.vue) — `<AlgorandAuthentication>` with `authorizedOnlyAccess`, reading the session
-  through `useAVMAuthentication()`, signing a transaction, logout, switching the network.
+  through `useAVMAuthentication()`, signing a transaction (`auth.sign`), signing raw ARC-60 data (`auth.signData`) with client-side verification, logout, switching the network.
 
 ## End-to-end tests (Playwright)
 
@@ -36,7 +36,9 @@ The Playwright config builds the demo with `VITE_E2E_MNEMONIC_WALLET=true` and s
 | Spec                                          | Covers                                                                                                                                                                              |
 | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`e2e/component.spec.ts`](e2e/component.spec.ts) | Sign-in screen and wallet list, form validation, password reveal, registration, axe accessibility scan, ARC-76 login with an independently derived address and cryptographically verified ARC-14 header, password dialog (wrong password, cancel, Escape), optional authentication, wallet sign-in through use-wallet 5 (testnet mnemonic adapter), wallet errors, network-dependent wallet list. Runs on a desktop and a mobile viewport with a stubbed algod. |
-| [`e2e/biatec-live.spec.ts`](e2e/biatec-live.spec.ts) | **Live Biatec Wallet**: creates a throw-away wallet on <https://wallet.biatec.io>, pairs it with the demo via the WalletConnect URI of the built-in dialog, approves the ARC-14 request (checks the realm shown in the wallet and the returned header), signs a transaction, logs out and checks the wallet session disappears; plus the “user rejects in the wallet” path. |
+| [`e2e/biatec-live.spec.ts`](e2e/biatec-live.spec.ts) | **Live Biatec Wallet**: creates a throw-away wallet on <https://wallet.biatec.io>, pairs it with the demo via the WalletConnect URI of the built-in dialog, approves the ARC-14 request (checks the realm shown in the wallet and the returned header), signs a transaction, signs raw ARC-60 data (verified independently in Node), logs out and checks the wallet session disappears; plus the “user rejects in the wallet” path. |
+
+The live spec serves the demo as `https://demo.biatec-e2e.test` through a Playwright route, because Biatec Wallet only accepts ARC-60 requests whose domain equals the page's port-less hostname.
 
 The live spec needs internet access (wallet.biatec.io, the WalletConnect relay, an algod node) and creates
 only empty, unfunded accounts in the browser profile of the test run. If wallet.biatec.io changes its UI the

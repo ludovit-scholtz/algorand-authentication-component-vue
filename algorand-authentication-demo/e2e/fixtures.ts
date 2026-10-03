@@ -1,4 +1,4 @@
-import { createPublicKey, pbkdf2Sync, verify } from 'node:crypto'
+import { createHash, createPublicKey, pbkdf2Sync, verify } from 'node:crypto'
 import { expect, type Page } from '@playwright/test'
 import algosdk from 'algosdk'
 
@@ -74,4 +74,26 @@ export async function signInWithArc76(page: Page, email = ARC76_EMAIL, password 
   await page.locator('#e').fill(email)
   await page.locator('#p').fill(password)
   await page.getByRole('button', { name: 'Continue' }).click()
+}
+
+/** Independently verifies an ARC-60 signature: Ed25519 over SHA-256(data) || SHA-256(authenticatorData = SHA-256(domain)). */
+export function verifyArc60Signature(args: {
+  address: string
+  dataBase64: string
+  domain: string
+  signatureBase64: string
+}): boolean {
+  const publicKey = createPublicKey({
+    key: Buffer.concat([
+      Buffer.from('302a300506032b6570032100', 'hex'),
+      Buffer.from(algosdk.decodeAddress(args.address).publicKey)
+    ]),
+    format: 'der',
+    type: 'spki'
+  })
+  const message = Buffer.concat([
+    createHash('sha256').update(Buffer.from(args.dataBase64, 'base64')).digest(),
+    createHash('sha256').update(createHash('sha256').update(args.domain).digest()).digest()
+  ])
+  return verify(null, message, publicKey, Buffer.from(args.signatureBase64, 'base64'))
 }

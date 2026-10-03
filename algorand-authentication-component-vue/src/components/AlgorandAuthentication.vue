@@ -8,6 +8,7 @@ import AaAlert from './AaAlert.vue'
 import AaField from './AaField.vue'
 import arc14, { arc14Header } from '../scripts/arc14'
 import { ARC76_MIN_PASSWORD_LENGTH, deriveArc76Account, isValidEmail } from '../scripts/arc76'
+import { signArc60 } from '../scripts/arc60'
 import { authStore } from '../store/authStore'
 import type { INotification } from '../types'
 
@@ -193,9 +194,9 @@ async function signWithArc76() {
       notify({ severity: 'error', message: signError.value })
       return
     }
-    const signed = authStore.usignedTxs.map((tx) =>
-      algosdk.decodeUnsignedTransaction(tx).signTxn(account.sk)
-    )
+    const signed = authStore.dataToSign
+      ? [(await signArc60(authStore.dataToSign, account)).signature]
+      : authStore.usignedTxs.map((tx) => algosdk.decodeUnsignedTransaction(tx).signTxn(account.sk))
     password.value = ''
     authStore.signaturePromise?.resolve(signed)
   } catch (e) {
@@ -386,8 +387,11 @@ async function signWithArc76() {
       @keydown.esc="cancelSignature"
     >
       <h2 id="aa-sign-title" class="aa-title">
-        Sign {{ authStore.usignedTxs.length }}
-        {{ authStore.usignedTxs.length === 1 ? 'transaction' : 'transactions' }}
+        <template v-if="authStore.dataToSign">Sign data</template>
+        <template v-else>
+          Sign {{ authStore.usignedTxs.length }}
+          {{ authStore.usignedTxs.length === 1 ? 'transaction' : 'transactions' }}
+        </template>
       </h2>
       <p class="aa-subtitle">
         Enter your password to sign as {{ shortAddress(authStore.account) }}.

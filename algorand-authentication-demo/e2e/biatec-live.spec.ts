@@ -12,10 +12,17 @@
  */
 import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 import { expectValidArc14Header } from './fixtures'
-import { decodeHeader } from './fixtures'
+import { decodeHeader, verifyArc60Signature } from './fixtures'
 
 const WALLET_URL = 'https://wallet.biatec.io/'
 const REALM = 'Demo'
+const BASE_URL = 'http://localhost:4173'
+/**
+ * The demo is served to the browser as https://demo.biatec-e2e.test (a Playwright route proxies it
+ * to the local preview server). use-wallet signs ARC-60 data for `location.host`, and Biatec
+ * Wallet checks it against the dApp's origin, which only matches for a port-less host.
+ */
+const DAPP_ORIGIN = 'https://demo.biatec-e2e.test'
 
 test.use({ locale: 'en-US' })
 
@@ -64,9 +71,9 @@ async function approveSessionProposal(wallet: Page, uri: string) {
  * request as a button (labelled with the ARC-14 realm for authentication requests); signing it
  * enables "Send back to DApp".
  */
-async function nextSignRequest(wallet: Page) {
+async function nextSignRequest(wallet: Page, method = 'algo_signTxn') {
   await wallet.bringToFront()
-  const row = wallet.getByRole('row').filter({ hasText: 'algo_signTxn' })
+  const row = wallet.getByRole('row').filter({ hasText: method })
   await expect(row).toBeVisible({ timeout: 60_000 })
   const signButton = row
     .getByRole('button')
@@ -89,8 +96,12 @@ test.describe('Biatec Wallet', () => {
   let dapp: Page
 
   test.beforeEach(async ({ context }) => {
+    await context.route(`${DAPP_ORIGIN}/**`, async (route) => {
+      const url = route.request().url().replace(DAPP_ORIGIN, BASE_URL)
+      await route.fulfill({ response: await route.fetch({ url }) })
+    })
     dapp = await context.newPage()
-    await dapp.goto('/')
+    await dapp.goto(`${DAPP_ORIGIN}/`)
     await expect(dapp.getByTestId('aa-screen')).toBeVisible()
   })
 
@@ -141,6 +152,25 @@ test.describe('Biatec Wallet', () => {
     expect(signed.sig).toBeDefined()
     // no ARC-76 password dialog is involved for wallet accounts
     await expect(dapp.getByRole('dialog')).toHaveCount(0)
+
+    // --- ARC-60 raw data signing through use-wallet's signData ----------------------------------
+    const text = 'Hello Biatec Wallet'
+    await dapp.getByTestId('data-input').fill(text)
+    await dapp.getByTestId('sign-data').click()
+    const dataRequest = await nextSignRequest(wallet.page, 'algo_signData')
+    await dataRequest.approve()
+    await dapp.bringToFront()
+    await expect(dapp.getByTestId('data-result')).toBeVisible({ timeout: 60_000 })
+    await expect(dapp.getByTestId('data-signer')).toHaveText(wallet.address)
+    await expect(dapp.getByTestId('data-valid')).toHaveText('valid ✓')
+    expect(
+      verifyArc60Signature({
+        address: wallet.address,
+        dataBase64: Buffer.from(text).toString('base64'),
+        domain: await dapp.getByTestId('data-domain').innerText(),
+        signatureBase64: await dapp.getByTestId('data-signature').innerText()
+      })
+    ).toBe(true)
 
     // --- logout disconnects the WalletConnect session -----------------------------------------
     await wallet.page.bringToFront()

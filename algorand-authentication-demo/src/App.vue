@@ -6,6 +6,7 @@ import { useNetwork, useWallet } from '@txnlab/use-wallet-vue'
 import {
   AlgorandAuthentication,
   useAVMAuthentication,
+  verifyArc60,
   type INotification
 } from 'algorand-authentication-component-vue'
 
@@ -21,7 +22,15 @@ const networks = computed(() => Object.keys(networkConfig))
 const state = reactive({
   requireAuthentication: true,
   lastSignedTransaction: '',
-  signing: false
+  signing: false,
+  dataToSign: 'Hello from the Algorand Authentication Demo',
+  signingData: false,
+  dataSignature: null as null | {
+    signer: string
+    domain: string
+    signature: string
+    valid: boolean
+  }
 })
 
 function onNotification(e: INotification) {
@@ -46,6 +55,27 @@ async function signTx() {
     addToast('error', e instanceof Error ? e.message : String(e))
   } finally {
     state.signing = false
+  }
+}
+
+async function signRawData() {
+  state.signingData = true
+  state.dataSignature = null
+  try {
+    // ARC-60: the payload travels base64 encoded
+    const data = Buffer.from(state.dataToSign, 'utf-8').toString('base64')
+    const res = await auth.signData(data)
+    state.dataSignature = {
+      signer: algosdk.encodeAddress(res.signer),
+      domain: res.domain,
+      signature: Buffer.from(res.signature).toString('base64'),
+      valid: await verifyArc60(res)
+    }
+    addToast('success', 'Data signed')
+  } catch (e) {
+    addToast('error', e instanceof Error ? e.message : String(e))
+  } finally {
+    state.signingData = false
   }
 }
 
@@ -140,30 +170,7 @@ const secondaryButton =
             :value="auth.authStore.arc14Header"
           />
 
-          <template v-if="state.lastSignedTransaction">
-            <label for="lastSigned" class="mt-4 block text-sm font-medium text-gray-600">
-              Last signed transaction
-            </label>
-            <textarea
-              id="lastSigned"
-              readonly
-              rows="4"
-              class="mt-1 w-full rounded-md border border-gray-300 bg-gray-50 p-2 font-mono text-xs"
-              data-testid="signed-tx"
-              :value="state.lastSignedTransaction"
-            />
-          </template>
-
           <div class="mt-6 flex flex-wrap gap-3">
-            <button
-              type="button"
-              :class="primaryButton"
-              :disabled="state.signing"
-              data-testid="sign"
-              @click="signTx"
-            >
-              Sign
-            </button>
             <button
               type="button"
               :class="secondaryButton"
@@ -181,6 +188,92 @@ const secondaryButton =
               {{ state.requireAuthentication ? 'Disable' : 'Enable' }} authentication requirement
             </button>
           </div>
+        </div>
+
+        <div class="rounded-lg bg-white p-6 shadow-md" data-testid="sign-tx-card">
+          <h2 class="text-xl font-semibold">Sign a transaction</h2>
+          <p class="mt-1 text-sm text-gray-600">
+            Builds a zero-amount payment on the selected network and signs it with
+            <code>auth.sign([txn], [0])</code>: your wallet asks for approval, an ARC-76 account
+            asks for its password.
+          </p>
+          <button
+            type="button"
+            :class="[primaryButton, 'mt-4']"
+            :disabled="state.signing"
+            data-testid="sign"
+            @click="signTx"
+          >
+            Sign transaction
+          </button>
+          <template v-if="state.lastSignedTransaction">
+            <label for="lastSigned" class="mt-4 block text-sm font-medium text-gray-600">
+              Signed transaction (base64)
+            </label>
+            <textarea
+              id="lastSigned"
+              readonly
+              rows="4"
+              class="mt-1 w-full rounded-md border border-gray-300 bg-gray-50 p-2 font-mono text-xs"
+              data-testid="signed-tx"
+              :value="state.lastSignedTransaction"
+            />
+          </template>
+        </div>
+
+        <div class="rounded-lg bg-white p-6 shadow-md" data-testid="sign-data-card">
+          <h2 class="text-xl font-semibold">Sign raw data (ARC-60)</h2>
+          <p class="mt-1 text-sm text-gray-600">
+            Signs arbitrary bytes with <code>auth.signData(base64)</code>. The signature covers
+            <code>SHA-256(data) || SHA-256(SHA-256(domain))</code>, so it cannot be replayed on
+            another site.
+          </p>
+          <label for="dataToSign" class="mt-4 block text-sm font-medium text-gray-600">
+            Data to sign
+          </label>
+          <textarea
+            id="dataToSign"
+            v-model="state.dataToSign"
+            rows="2"
+            class="mt-1 w-full rounded-md border border-gray-300 p-2 text-sm"
+            data-testid="data-input"
+          />
+          <button
+            type="button"
+            :class="[primaryButton, 'mt-3']"
+            :disabled="state.signingData || !state.dataToSign || !auth.canSignData()"
+            data-testid="sign-data"
+            @click="signRawData"
+          >
+            Sign data
+          </button>
+          <p
+            v-if="!auth.canSignData()"
+            class="mt-2 text-sm text-amber-700"
+            data-testid="sign-data-unsupported"
+          >
+            {{ auth.authStore.wallet }} cannot sign arbitrary data.
+          </p>
+          <dl
+            v-if="state.dataSignature"
+            class="mt-4 grid gap-2 text-sm sm:grid-cols-[8rem_1fr]"
+            data-testid="data-result"
+          >
+            <dt class="font-medium text-gray-600">Signer</dt>
+            <dd class="font-mono break-all" data-testid="data-signer">
+              {{ state.dataSignature.signer }}
+            </dd>
+            <dt class="font-medium text-gray-600">Domain</dt>
+            <dd data-testid="data-domain">{{ state.dataSignature.domain }}</dd>
+            <dt class="font-medium text-gray-600">Signature</dt>
+            <dd class="font-mono break-all text-xs" data-testid="data-signature">
+              {{ state.dataSignature.signature }}
+            </dd>
+            <dt class="font-medium text-gray-600">Verified</dt>
+            <dd data-testid="data-valid">
+              {{ state.dataSignature.valid ? 'valid ✓' : 'INVALID ✗' }}
+            </dd>
+          </dl>
         </div>
       </section>
     </main>

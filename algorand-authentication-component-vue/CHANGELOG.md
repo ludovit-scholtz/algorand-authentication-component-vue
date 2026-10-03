@@ -17,6 +17,7 @@
 - Restored wallet sessions show “Sign in with <wallet>”.
 - `authenticated` event, `coverImage` prop, theming through `--aa-*` CSS variables, responsive layout,
   accessible forms (labels, show/hide password, `aria-live` errors, focus rings, Escape closes dialogs).
+- ARC-60 raw data signing: `signData()` / `canSignData()` (wallets via use-wallet, ARC-76 accounts via the password dialog), `signArc60`, `verifyArc60`.
 - Exports `arc14`, `arc14Header`, `deriveArc76Account`; `sign()` signer argument is optional.
 - AI integration guide and portable agent skill (`skill/algorand-authentication-integration/SKILL.md`).
 - Unit/component tests (Vitest) and Playwright end-to-end tests in the demo, including the live Biatec Wallet.

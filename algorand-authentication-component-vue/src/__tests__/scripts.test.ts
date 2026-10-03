@@ -50,3 +50,16 @@ describe('arc14', () => {
     expect(decoded.txn.sender.toString()).toBe(account.addr.toString())
   })
 })
+
+describe('arc60', () => {
+  it('signs and verifies arbitrary data, and rejects tampering', async () => {
+    const { signArc60, verifyArc60 } = await import('../scripts/arc60')
+    const account = algosdk.generateAccount()
+    const data = Buffer.from('hello').toString('base64')
+    const res = await signArc60(data, account)
+    expect(res.domain).toBe(globalThis.location.host)
+    expect(res.signature).toHaveLength(64)
+    expect(await verifyArc60(res)).toBe(true)
+    expect(await verifyArc60({ ...res, data: Buffer.from('hellp').toString('base64') })).toBe(false)
+  })
+})

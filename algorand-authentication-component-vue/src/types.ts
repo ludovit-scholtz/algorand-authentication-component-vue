@@ -41,6 +41,8 @@ interface IAuthenticationStore {
   inRegistrationToSign: boolean
   /** Encoded unsigned transactions waiting for the ARC-76 password. */
   usignedTxs: Uint8Array[]
+  /** Base64 payload waiting for the ARC-76 password (ARC-60 data signing); empty for transactions. */
+  dataToSign: string
   /** The ARC-76 password dialog is open. */
   inArc76Signature: boolean
   /** A wallet is currently asked to sign. */
