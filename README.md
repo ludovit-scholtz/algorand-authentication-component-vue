@@ -1,44 +1,16 @@
-# Algorand authentication component vue
+# algorand-authentication-component-vue (monorepo)
 
-This component allows users to use ARC14 authentication with common algorand wallet providers or ARC76 email password account.
-
-## Installation
-
-Install NPM package:
+| Package                                                                    | What it is                                                                               |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [`algorand-authentication-component-vue`](algorand-authentication-component-vue) | v2 — Vue 3 ARC-14 / ARC-76 sign-in component for use-wallet 5 ([README](algorand-authentication-component-vue/README.md), [migration](algorand-authentication-component-vue/docs/MIGRATION.md), [AI integration guide](algorand-authentication-component-vue/docs/AI_INTEGRATION.md)) |
+| [`algorand-authentication-demo`](algorand-authentication-demo)             | Demo app and Playwright end-to-end tests, including the live Biatec Wallet integration  |
 
 ```bash
-npm i algorand-authentication-component-vue --save
+pnpm install
+pnpm build        # component: type-check + library + declarations
+pnpm test         # component unit tests
+pnpm demo         # demo dev server (needs a built component)
+pnpm test:e2e     # Playwright (installs: pnpm --filter algorand-authentication-demo exec playwright install chromium)
 ```
 
-Import component and/or types
-
-```js
-import { AlgorandAuthentication } from 'algorand-authentication-component-vue'
-import type {IAlgorandAuthenticationStore,INotification} from 'algorand-authentication-component-vue'
-```
-
-Use in template
-
-```vue
-<Suspense>
-  <AlgorandAuthentication
-    @onStateChange="onStateChange"
-    @onNotification="onNotification"
-    ref="authComponent"
-    :wallets="['pera', 'exodus', 'defly', 'myalgo', 'mnemonic']"
-  >
-    <h1>Authenticated Content {{ authState.count }}</h1>
-    <div>
-      Account: {{ authState.arc76email }} {{ authState.wallet }} / {{ authState.account }}
-    </div>
-    <button :onclick="signTx">Sign</button>
-    <button :onclick="logout">Logout</button>
-  </AlgorandAuthentication>
-</Suspense>
-```
-
-## DEMO
-
-Demo Project: https://www.github.com/scholtz/algorand-authentication-demo
-
-Live demo: https://algorand-authentication-demo.vercel.app/
+Requires Node ≥ 20.19 and pnpm.

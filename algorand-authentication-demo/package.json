@@ -1,0 +1,53 @@
+{
+  "name": "algorand-authentication-demo",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview --port 4173 --strictPort",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --noEmit -p tsconfig.app.json && vue-tsc --noEmit -p tsconfig.node.json",
+    "lint": "eslint .",
+    "format": "prettier --write src/ e2e/",
+    "test:e2e": "playwright test",
+    "test:e2e:offline": "playwright test --project=chromium --project=mobile",
+    "test:e2e:live": "playwright test --project=biatec-live"
+  },
+  "dependencies": {
+    "@txnlab/use-wallet-defly": "^5.0.1",
+    "@txnlab/use-wallet-exodus": "^5.0.1",
+    "@txnlab/use-wallet-kibisis": "^5.0.1",
+    "@txnlab/use-wallet-lute": "^5.0.0",
+    "@txnlab/use-wallet-mnemonic": "^5.0.1",
+    "@txnlab/use-wallet-pera": "^5.0.1",
+    "@txnlab/use-wallet-vue": "^5.0.1",
+    "algorand-authentication-component-vue": "workspace:*",
+    "algosdk": "^3.8.0",
+    "biatec-wallet-use-wallet-client": "^0.2.0",
+    "buffer": "^6.0.3",
+    "vue": "^3.5.43"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tsconfig/node22": "^22.0.6",
+    "@types/node": "^24.0.0",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.11.0",
+    "eslint-plugin-vue": "^10.11.1",
+    "globals": "^17.13.0",
+    "npm-run-all2": "^9.0.3",
+    "prettier": "^3.9.9",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.2",
+    "vue-tsc": "^3.3.12"
+  }
+}

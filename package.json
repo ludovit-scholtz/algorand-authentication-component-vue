@@ -1,55 +1,18 @@
 {
-  "name": "algorand-authentication-component-vue",
-  "version": "1.1.3",
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/algorand-authentication-component-vue.umd.js",
-  "module": "./dist/algorand-authentication-component-vue.es.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/algorand-authentication-component-vue.es.js",
-      "require": "./dist/algorand-authentication-component-vue.umd.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./dist/style.css": "./dist/style.css"
-  },
+  "name": "algorand-auth-workspace",
+  "private": true,
+  "version": "2.0.0",
   "scripts": {
-    "dev": "vite build --watch",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "build-step-1": "vite build",
-    "build-step-2": "vue-tsc  --declaration --emitDeclarationOnly",
-    "build-step-3": "npm publish",
-    "type-check": "vue-tsc --noEmit -p tsconfig.json --composite false",
-    "types": "vue-tsc --declaration --emitDeclarationOnly",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
-  },
-  "dependencies": {
-    "@thencc/any-wallet": "^0.2.10",
-    "algosdk": "^2.7.0",
-    "buffer": "^6.0.3",
-    "primevue": "^3.53.0",
-    "vue": "^3.3.4"
+    "build": "pnpm --filter algorand-authentication-component-vue build",
+    "demo": "pnpm --filter algorand-authentication-demo dev",
+    "test": "pnpm --filter algorand-authentication-component-vue test",
+    "test:e2e": "pnpm --filter algorand-authentication-demo test:e2e"
   },
   "devDependencies": {
-    "@babel/types": "^7.23.0",
-    "@rushstack/eslint-patch": "^1.5.1",
-    "@tsconfig/node18": "^18.2.2",
-    "@types/node": "^18.18.5",
-    "@vitejs/plugin-vue": "^4.4.0",
-    "@vue/eslint-config-prettier": "^8.0.0",
-    "@vue/eslint-config-typescript": "^12.0.0",
-    "@vue/tsconfig": "^0.4.0",
-    "eslint": "^8.51.0",
-    "eslint-plugin-vue": "^9.17.0",
-    "npm-run-all2": "^6.1.1",
-    "prettier": "^3.0.3",
-    "typescript": "~5.2.0",
-    "vite": "^4.4.11",
-    "vue-tsc": "^1.8.19"
+    "prettier": "^3.9.9"
+  },
+  "packageManager": "pnpm@11.5.2",
+  "engines": {
+    "node": ">=20.19"
   }
 }

@@ -1,0 +1,87 @@
+{
+  "name": "algorand-authentication-component-vue",
+  "version": "2.0.0",
+  "description": "Vue 3 authentication component for Algorand / AVM: ARC-14 sign-in with use-wallet 5 wallets or ARC-76 email + password accounts.",
+  "type": "module",
+  "keywords": [
+    "algorand",
+    "avm",
+    "vue",
+    "authentication",
+    "arc14",
+    "arc76",
+    "use-wallet",
+    "biatec"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ludovit-scholtz/algorand-authentication-component-vue.git"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "skill"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist/algorand-authentication-component-vue.umd.cjs",
+  "module": "./dist/algorand-authentication-component-vue.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/algorand-authentication-component-vue.js",
+      "require": "./dist/algorand-authentication-component-vue.umd.cjs"
+    },
+    "./style.css": "./dist/algorand-authentication-component-vue.css",
+    "./dist/style.css": "./dist/algorand-authentication-component-vue.css",
+    "./dist/algorand-authentication-component-vue.css": "./dist/algorand-authentication-component-vue.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "run-s type-check build-only types",
+    "build-only": "vite build",
+    "types": "vue-tsc --declaration --emitDeclarationOnly --outDir dist -p tsconfig.build.json",
+    "type-check": "vue-tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "format": "prettier --write src/"
+  },
+  "peerDependencies": {
+    "@txnlab/use-wallet-vue": "^5.0.0",
+    "algosdk": "^3.5.0",
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tsconfig/node22": "^22.0.6",
+    "@txnlab/use-wallet-vue": "^5.0.1",
+    "@types/node": "^24.0.0",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "@vue/test-utils": "^2.4.6",
+    "@vue/tsconfig": "^0.9.1",
+    "algosdk": "^3.8.0",
+    "eslint": "^10.11.0",
+    "eslint-plugin-vue": "^10.11.1",
+    "jsdom": "^30.1.1",
+    "npm-run-all2": "^9.0.3",
+    "prettier": "^3.9.9",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3",
+    "vue": "^3.5.43",
+    "vue-tsc": "^3.3.12"
+  },
+  "homepage": "https://github.com/ludovit-scholtz/algorand-authentication-component-vue#readme",
+  "bugs": {
+    "url": "https://github.com/ludovit-scholtz/algorand-authentication-component-vue/issues"
+  }
+}
