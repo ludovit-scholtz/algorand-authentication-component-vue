@@ -1,8 +1,18 @@
 {
   "name": "algorand-auth-workspace",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "scripts": {
+    "build": "pnpm --filter algorand-authentication-component-vue build",
+    "demo": "pnpm --filter algorand-authentication-demo dev",
+    "test": "pnpm --filter algorand-authentication-component-vue test",
+    "test:e2e": "pnpm --filter algorand-authentication-demo test:e2e"
+  },
   "devDependencies": {
-    "prettier": "^3.5.3"
+    "prettier": "^3.9.9"
+  },
+  "packageManager": "pnpm@11.5.2",
+  "engines": {
+    "node": ">=20.19"
   }
 }

@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
-import { Deferred, IAuthenticationStore } from '../types'
-const defaultState: IAuthenticationStore = {
+import type { Deferred, IAuthenticationStore } from '../types'
+
+const defaultState = (): IAuthenticationStore => ({
   inAuthentication: false,
   isAuthenticated: false,
   arc14Header: '',
@@ -19,7 +20,14 @@ const defaultState: IAuthenticationStore = {
   inArc76Signature: false,
   inWalletSignature: false,
   signaturePromise: null as Deferred<Uint8Array[]> | null
-}
-const authStore = reactive(defaultState)
+})
 
-export { authStore }
+const authStore = reactive<IAuthenticationStore>(defaultState())
+
+/** Resets the store to its initial state (keeps the login/logout counter). */
+const resetAuthStore = (): void => {
+  const count = authStore.count
+  Object.assign(authStore, defaultState(), { count })
+}
+
+export { authStore, resetAuthStore }

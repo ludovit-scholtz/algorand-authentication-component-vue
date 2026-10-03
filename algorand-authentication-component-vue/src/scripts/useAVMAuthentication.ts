@@ -1,58 +1,86 @@
 import algosdk from 'algosdk'
-import { authStore } from '../store/authStore'
-
-import { IAuthenticationStore } from '../types'
+import { useWallet } from '@txnlab/use-wallet-vue'
+import { authStore, resetAuthStore } from '../store/authStore'
 import { createDeferred } from '../types'
-const authenticate = () => {
-  authStore.inAuthentication = true
-  console.log('authStore.authenticate', authStore)
-}
-const logout = () => {
-  authStore.count++
-  authStore.arc14Header = ''
-  authStore.isAuthenticated = false
-  authStore.account = ''
-  authStore.wallet = ''
-  authStore.arc76email = ''
-  authStore.m = ''
-  console.log('authStore.logout', authStore)
-}
+import type { IAuthenticationStore } from '../types'
 
-const sign = async (
+export type TransactionSigner = (
   txnGroup: algosdk.Transaction[],
-  indexesToSign: number[],
-  transactionSigner: (
-    txnGroup: algosdk.Transaction[],
-    indexesToSign: number[]
-  ) => Promise<Uint8Array[]>
-): Promise<Uint8Array[]> => {
-  if (authStore.wallet == 'arc76') {
-    authStore.usignedTxs = txnGroup.map((txn) => algosdk.encodeUnsignedTransaction(txn))
-    authStore.inArc76Signature = true
-    authStore.signaturePromise = createDeferred<Uint8Array[]>()
-    return await authStore.signaturePromise.promise
-  } else {
-    authStore.inWalletSignature = true
-    return await transactionSigner(txnGroup, indexesToSign)
-  }
-}
-export const useAVMAuthentication = (): {
+  indexesToSign: number[]
+) => Promise<Uint8Array[]>
+
+export interface IAVMAuthentication {
   authStore: IAuthenticationStore
+  /** Opens the sign-in screen. */
   authenticate: () => void
-  logout: () => void
+  /** Clears the session and disconnects the wallet that was used to sign in. */
+  logout: () => Promise<void>
+  /**
+   * Signs a transaction group with the wallet (or ARC-76 account) the user signed in with.
+   * `transactionSigner` defaults to the use-wallet signer.
+   */
   sign: (
     txnGroup: algosdk.Transaction[],
     indexesToSign: number[],
-    transactionSigner: (
-      txnGroup: algosdk.Transaction[],
-      indexesToSign: number[]
-    ) => Promise<Uint8Array[]>
+    transactionSigner?: TransactionSigner
   ) => Promise<Uint8Array[]>
-} => {
-  return {
-    authStore,
-    authenticate,
-    logout,
-    sign
+}
+
+const authenticate = () => {
+  authStore.inAuthentication = true
+}
+
+export const useAVMAuthentication = (): IAVMAuthentication => {
+  // use-wallet resolves its manager through provide/inject, so this only works inside
+  // setup() of an app that installed WalletManagerPlugin.
+  let walletApi: ReturnType<typeof useWallet> | undefined
+  try {
+    walletApi = useWallet()
+  } catch {
+    walletApi = undefined
   }
+
+  const logout = async () => {
+    const wallet = walletApi?.activeWallet.value
+    if (authStore.wallet !== 'arc76' && wallet) {
+      try {
+        await wallet.disconnect()
+      } catch (e) {
+        console.warn('Wallet disconnect failed', e)
+      }
+    }
+    authStore.signaturePromise?.reject(new Error('Logged out'))
+    authStore.count++
+    resetAuthStore()
+  }
+
+  const sign = async (
+    txnGroup: algosdk.Transaction[],
+    indexesToSign: number[],
+    transactionSigner?: TransactionSigner
+  ): Promise<Uint8Array[]> => {
+    if (authStore.wallet === 'arc76') {
+      authStore.usignedTxs = txnGroup.map((txn) => algosdk.encodeUnsignedTransaction(txn))
+      authStore.signaturePromise = createDeferred<Uint8Array[]>()
+      authStore.inArc76Signature = true
+      try {
+        return await authStore.signaturePromise.promise
+      } finally {
+        authStore.signaturePromise = null
+        authStore.inArc76Signature = false
+      }
+    }
+    const signer = transactionSigner ?? walletApi?.transactionSigner
+    if (!signer) {
+      throw new Error('No transaction signer available - is WalletManagerPlugin installed?')
+    }
+    authStore.inWalletSignature = true
+    try {
+      return await signer(txnGroup, indexesToSign)
+    } finally {
+      authStore.inWalletSignature = false
+    }
+  }
+
+  return { authStore, authenticate, logout, sign }
 }

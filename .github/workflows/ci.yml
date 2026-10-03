@@ -1,0 +1,31 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r lint
+      - run: pnpm -r type-check
+      - run: pnpm build
+      - run: pnpm test
+      - run: pnpm --filter algorand-authentication-demo exec playwright install --with-deps chromium
+      # The live Biatec Wallet spec needs wallet.biatec.io and the WalletConnect relay; keep it informational.
+      - run: pnpm --filter algorand-authentication-demo test:e2e:offline
+      - run: pnpm --filter algorand-authentication-demo test:e2e:live
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: algorand-authentication-demo/playwright-report

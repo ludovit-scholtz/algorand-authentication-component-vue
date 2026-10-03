@@ -1,3 +1,9 @@
 packages:
   - 'algorand-authentication-component-vue'
   - 'algorand-authentication-demo'
+
+# Native build scripts of these transitive deps are optional perf addons; skip them.
+allowBuilds:
+  '@parcel/watcher': false
+  cbor-extract: false
+  vue-demi: false

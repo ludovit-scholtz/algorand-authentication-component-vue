@@ -1,12 +1,9 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
-    "composite": true,
-    "baseUrl": ".",
-    "module": "es2020",
-    "target": "es2020",
+    "noEmit": true,
+    "noUnusedLocals": true,
     "paths": {
       "@/*": ["./src/*"]
     }

@@ -1,44 +1,36 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import path from 'node:path'
 
-// https://vitejs.dev/config/
 export default defineConfig({
+  plugins: [vue()],
+  publicDir: false,
   build: {
     emptyOutDir: true,
     sourcemap: true,
-
+    cssCodeSplit: false,
     lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
-      name: 'algorand-authentication-component-vue',
-      fileName: (format) => `algorand-authentication-component-vue.${format}.js`
+      entry: path.resolve(import.meta.dirname, 'src/index.ts'),
+      name: 'AlgorandAuthenticationComponentVue',
+      formats: ['es', 'umd'],
+      fileName: 'algorand-authentication-component-vue',
+      cssFileName: 'algorand-authentication-component-vue'
     },
     rollupOptions: {
-      external: [
-        'vue',
-        '@txnlab/use-wallet-vue',
-        '@thencc/inkey-types',
-        '@blockshake/defly-connect',
-        '@perawallet/connect',
-        '@randlabs/myalgo-connect',
-        '@walletconnect/modal',
-        '@walletconnect/sign-client',
-        '@walletconnect/types',
-        'algosdk',
-        'buffer',
-        'primevue'
-      ],
+      external: ['vue', '@txnlab/use-wallet-vue', '@txnlab/use-wallet', 'algosdk', 'buffer'],
       output: {
         globals: {
-          buffer: 'buffer',
-          primevue: 'primevue',
           vue: 'Vue',
           algosdk: 'algosdk',
-          '@txnlab/use-wallet-vue': '@txnlab/use-wallet-vue',
-          '@thencc/inkey-types': '@thencc/inkey-types'
+          buffer: 'buffer',
+          '@txnlab/use-wallet-vue': 'UseWalletVue',
+          '@txnlab/use-wallet': 'UseWallet'
         }
       }
     }
   },
-  plugins: [vue()]
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/*.test.ts']
+  }
 })

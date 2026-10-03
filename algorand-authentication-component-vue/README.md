@@ -1,44 +1,213 @@
-# Algorand authentication component vue
+# algorand-authentication-component-vue
 
-This component allows users to use ARC14 authentication with common algorand wallet providers or ARC76 email password account.
+Vue 3 sign-in component for Algorand / AVM apps. Users authenticate with **ARC-14** by signing a
+zero-fee self payment — either with any [`@txnlab/use-wallet`](https://github.com/TxnLab/use-wallet)
+**v5** wallet (Biatec, Pera, Defly, Exodus, Kibisis, Lute, …) or with an **ARC-76** account derived
+from an email address and a password. Your backend receives a standard `Authorization: SigTx …`
+header it can verify without any shared secret.
 
-## Installation
+- **v2** — requires use-wallet 5, has **no PrimeVue / Tailwind dependency** (self-contained CSS), ships
+  TypeScript types, and an [AI integration guide](docs/AI_INTEGRATION.md).
+- Upgrading from 1.x? Read [docs/MIGRATION.md](docs/MIGRATION.md) (5 minutes).
+- Live demo: <https://algorand-authentication-demo.vercel.app/> · demo source:
+  [`algorand-authentication-demo`](https://github.com/scholtz/algorand-authentication-component-vue/tree/main/algorand-authentication-demo)
 
-Install NPM package:
+## Install
 
 ```bash
-npm i algorand-authentication-component-vue --save
+pnpm add algorand-authentication-component-vue @txnlab/use-wallet-vue algosdk vue
+# plus the wallets you want to offer, e.g.
+pnpm add @txnlab/use-wallet-pera @txnlab/use-wallet-defly biatec-wallet-use-wallet-client
 ```
 
-Import component and/or types
+Peer dependencies: `vue ^3.5`, `@txnlab/use-wallet-vue ^5`, `algosdk ^3.5`.
 
-```js
-import { AlgorandAuthentication } from 'algorand-authentication-component-vue'
-import type {IAlgorandAuthenticationStore,INotification} from 'algorand-authentication-component-vue'
+## Quick start
+
+`main.ts` — register the wallets once and import the component's stylesheet:
+
+```ts
+import 'algorand-authentication-component-vue/style.css'
+import { createApp } from 'vue'
+import { WalletManagerPlugin } from '@txnlab/use-wallet-vue'
+import { biatec } from 'biatec-wallet-use-wallet-client'
+import { pera } from '@txnlab/use-wallet-pera'
+import App from './App.vue'
+
+createApp(App)
+  .use(WalletManagerPlugin, {
+    wallets: [biatec({ projectId: import.meta.env.VITE_WC_PROJECT_ID }), pera()],
+    defaultNetwork: 'mainnet'
+  })
+  .mount('#app')
 ```
 
-Use in template
+`App.vue` — wrap the content that needs a signed-in user:
 
 ```vue
-<Suspense>
-  <AlgorandAuthentication
-    @onStateChange="onStateChange"
-    @onNotification="onNotification"
-    ref="authComponent"
-    :wallets="['pera', 'exodus', 'defly', 'myalgo', 'mnemonic']"
-  >
-    <h1>Authenticated Content {{ authState.count }}</h1>
-    <div>
-      Account: {{ authState.arc76email }} {{ authState.wallet }} / {{ authState.account }}
-    </div>
-    <button :onclick="signTx">Sign</button>
-    <button :onclick="logout">Logout</button>
+<script setup lang="ts">
+import { AlgorandAuthentication, useAVMAuthentication } from 'algorand-authentication-component-vue'
+
+const auth = useAVMAuthentication()
+
+async function callApi() {
+  const res = await fetch('/api/me', { headers: { Authorization: auth.authStore.arc14Header } })
+  return res.json()
+}
+</script>
+
+<template>
+  <AlgorandAuthentication arc14Realm="MyApp" authorizedOnlyAccess>
+    <p>Signed in as {{ auth.authStore.account }} ({{ auth.authStore.wallet }})</p>
+    <button @click="callApi">Call API</button>
+    <button @click="auth.logout()">Log out</button>
   </AlgorandAuthentication>
-</Suspense>
+</template>
 ```
 
-## DEMO
+With `authorizedOnlyAccess` the sign-in screen replaces the slot until the user is authenticated.
+Without it the slot is always rendered and you open the sign-in screen yourself with
+`auth.authenticate()`.
 
-Demo Project: https://www.github.com/scholtz/algorand-authentication-demo
+## `<AlgorandAuthentication>`
 
-Live demo: https://algorand-authentication-demo.vercel.app/
+| Prop                   | Type                 | Default                | Description                                                                                        |
+| ---------------------- | -------------------- | ---------------------- | -------------------------------------------------------------------------------------------------- |
+| `arc14Realm`           | `string`             | **required**           | Realm written to the ARC-14 note: `<realm>#ARC14`. Your backend checks it.                         |
+| `authorizedOnlyAccess` | `boolean`            | `false`                | Show the sign-in screen instead of the slot until `isAuthenticated`.                               |
+| `wallets`              | `string[]`           | `[]` (all)             | Wallet ids to offer (`'biatec'`, `'pera'`, …). Empty = every wallet available on the active network. |
+| `algodHost`            | `string`             | active use-wallet node | Custom algod used to fetch transaction parameters.                                                 |
+| `algodPort`            | `number \| string`   | `''`                   | Port of the custom algod.                                                                          |
+| `algodToken`           | `string`             | `''`                   | Token of the custom algod.                                                                         |
+| `coverImage`           | `string`             | gradient               | Background image URL for the sign-in screen.                                                       |
+
+Any other attribute (e.g. `class`) is applied to the sign-in screen root element.
+
+| Event            | Payload                                          | When                                      |
+| ---------------- | ------------------------------------------------ | ----------------------------------------- |
+| `onNotification` | `{ severity: 'error' \| 'success' \| 'info' \| 'warn'; message: string }` | Wallet or derivation errors. Show them in your toast system. |
+| `authenticated`  | `{ account: string; wallet: string; arc14Header: string }` | The user finished signing in.             |
+
+The default slot is rendered when the sign-in screen is not shown. While an ARC-76 account signs a
+transaction the component shows a password dialog on top of the slot.
+
+## `useAVMAuthentication()`
+
+Call it inside `setup()` of a component under `WalletManagerPlugin`.
+
+```ts
+const { authStore, authenticate, logout, sign } = useAVMAuthentication()
+```
+
+| Member              | Description                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| `authStore`         | Reactive state, see below.                                                                              |
+| `authenticate()`    | Opens the sign-in screen (`authStore.inAuthentication = true`).                                         |
+| `logout()`          | Async. Disconnects the wallet used to sign in, clears the store, bumps `authStore.count`.               |
+| `sign(txns, idx, signer?)` | Signs a group with the wallet **or** the ARC-76 account the user signed in with. `signer` defaults to use-wallet's `transactionSigner`. Rejects when the user cancels or the wallet fails. |
+
+```ts
+const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({ sender, receiver, amount, suggestedParams })
+const [signed] = await auth.sign([txn], [0]) // Uint8Array, ready for algod.sendRawTransaction
+```
+
+`authStore` fields: `isAuthenticated`, `account`, `wallet` (`'arc76'` or a use-wallet id),
+`arc14Header` (`SigTx <base64>`), `arc76email`, `inAuthentication`, `inWalletSignature`,
+`inArc76Signature`, `count` (incremented on every login/logout — handy to `watch`).
+
+Also exported: `arc14(realm, address, suggestedParams)`, `arc14Header(signedTxn)` and
+`deriveArc76Account(email, password)`.
+
+## Verifying the header on your backend
+
+`Authorization: SigTx <base64>` is a base64 msgpack-encoded **signed** zero-amount self payment whose
+note is `<realm>#ARC14`. It is never sent to the network. Verify on every request:
+
+1. Decode with `algosdk.decodeSignedTransaction`; require a payment with `amount = 0`, `fee = 0`,
+   `sender == receiver` and `note == "<realm>#ARC14"` for **your** realm.
+2. Verify the Ed25519 signature over `"TX" + encodeUnsignedTransaction(txn)` with the public key of
+   `sender` (or of `sgnr` for rekeyed accounts).
+3. Reject headers outside the transaction validity window (`firstValid` … `lastValid`) so a leaked
+   header expires; `sender` is the authenticated address.
+
+```ts
+import algosdk from 'algosdk'
+import { createPublicKey, verify } from 'node:crypto'
+
+export function verifyArc14(header: string, realm: string): string {
+  const signed = algosdk.decodeSignedTransaction(Buffer.from(header.replace(/^SigTx /, ''), 'base64'))
+  const t = signed.txn
+  const ok =
+    t.payment?.amount === 0n && t.fee === 0n &&
+    t.sender.toString() === t.payment.receiver.toString() &&
+    new TextDecoder().decode(t.note) === `${realm}#ARC14`
+  if (!ok || !signed.sig) throw new Error('Invalid ARC-14 transaction')
+  const signer = signed.sgnr ?? t.sender
+  const key = createPublicKey({
+    key: Buffer.concat([Buffer.from('302a300506032b6570032100', 'hex'), Buffer.from(signer.publicKey)]),
+    format: 'der',
+    type: 'spki'
+  })
+  const message = Buffer.concat([Buffer.from('TX'), Buffer.from(algosdk.encodeUnsignedTransaction(t))])
+  if (!verify(null, message, key, Buffer.from(signed.sig))) throw new Error('Bad signature')
+  return t.sender.toString()
+}
+```
+
+## ARC-76 accounts
+
+Email + password are run through PBKDF2-SHA256 (999 999 rounds, Web Crypto) into an Ed25519 key —
+the same account on every device and in every ARC-76-compatible app (for example Biatec). Nothing is
+stored: the password is requested again to sign each transaction group, and a wrong password never
+signs. Passwords must be at least 16 characters. Registration only adds a confirmation field; the
+account exists as soon as someone derives it.
+
+## Styling
+
+The component ships one stylesheet (`algorand-authentication-component-vue/style.css`, ~2 kB gzip),
+all classes are prefixed `aa-`, and it needs neither Tailwind nor PrimeVue. Theme it by overriding
+CSS variables on `.aa-root`:
+
+```css
+.aa-root {
+  --aa-primary: #7c3aed;
+  --aa-primary-hover: #6d28d9;
+  --aa-dark-panel: rgba(15, 23, 42, 0.85);
+  --aa-radius: 0.75rem;
+  --aa-cover: url('/my-background.jpg'); /* or use the coverImage prop */
+}
+```
+
+Available variables: `--aa-primary`, `--aa-primary-hover`, `--aa-primary-contrast`, `--aa-focus`,
+`--aa-text`, `--aa-text-muted`, `--aa-label`, `--aa-surface`, `--aa-border`, `--aa-secondary`,
+`--aa-secondary-hover`, `--aa-danger-bg`, `--aa-danger-text`, `--aa-dark-panel`, `--aa-radius`,
+`--aa-radius-sm`, `--aa-cover`.
+
+The layout is two panels (form | wallets) on screens ≥ 768 px and stacked below that.
+
+## Wallets
+
+Any use-wallet v5 adapter works. The component lists `availableWallets` of the active network
+(so the testnet-only mnemonic adapter disappears on mainnet), signs the ARC-14 transaction with the
+chosen wallet and, if a wallet session is restored after a page reload, offers *“Sign in with
+\<wallet\>”* instead of silently prompting.
+
+Bundlers: Pera, Defly and WalletConnect-based wallets still expect `Buffer`/`process` globals —
+see the demo's [`main.ts`](../algorand-authentication-demo/src/main.ts) and `vite.config.ts`.
+
+## Development
+
+```bash
+pnpm install           # at the repository root
+pnpm build             # type-check, library build, declarations
+pnpm test              # vitest unit + component tests
+pnpm demo              # run the demo app
+pnpm test:e2e          # Playwright against the demo, including the live Biatec Wallet
+```
+
+## For AI coding agents
+
+[`docs/AI_INTEGRATION.md`](docs/AI_INTEGRATION.md) explains how to hand
+[`skill/algorand-authentication-integration/SKILL.md`](skill/algorand-authentication-integration/SKILL.md) —
+a self-contained, step-by-step playbook — to Claude Code, Cursor, Copilot or any other agent so it can
+integrate this component into your project correctly on the first try. It ships inside the npm package.
