@@ -157,8 +157,9 @@ const auth = useAVMAuthentication()
 </template>
 ```
 
-Use it as `<RequireAuth><AccountPage /></RequireAuth>` inside the `<AlgorandAuthentication>` slot. Route guards
-that run outside `setup()` cannot reach the session, so guard in components (and on the server, see §6).
+Use it as `<RequireAuth><AccountPage /></RequireAuth>` inside the `<AlgorandAuthentication>` slot. `useAVMAuthentication()` is meant to be called inside `setup()` (outside it, wallet features are unavailable
+and Vue logs an inject warning), so prefer guarding in components over router guards — and always on the
+server, see §6.
 
 ## 5. Call your API with the ARC-14 header
 
