@@ -1,5 +1,7 @@
 # Algorand authentication demo
 
+**Live: <https://algorand-authentication-demo-seven.vercel.app>**
+
 Reference app for [`algorand-authentication-component-vue`](../algorand-authentication-component-vue) v2 —
 Vue 3, `@txnlab/use-wallet-vue` 5, the Biatec wallet adapter
 ([`biatec-wallet-use-wallet-client`](https://www.npmjs.com/package/biatec-wallet-use-wallet-client)) next to

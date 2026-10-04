@@ -5,6 +5,8 @@
 | [`algorand-authentication-component-vue`](algorand-authentication-component-vue) | v2 — Vue 3 ARC-14 / ARC-76 sign-in component for use-wallet 5 ([README](algorand-authentication-component-vue/README.md), [migration](algorand-authentication-component-vue/docs/MIGRATION.md), [AI integration guide](algorand-authentication-component-vue/docs/AI_INTEGRATION.md)) |
 | [`algorand-authentication-demo`](algorand-authentication-demo)             | Demo app and Playwright end-to-end tests, including the live Biatec Wallet integration  |
 
+**Live demo: <https://algorand-authentication-demo-seven.vercel.app>**
+
 ```bash
 pnpm install
 pnpm build        # component: type-check + library + declarations
