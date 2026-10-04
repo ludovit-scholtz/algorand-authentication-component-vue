@@ -6,6 +6,9 @@ It is self-contained — context gathering, install, wallet registration for use
 signing, backend verification of the ARC-14 header, a verification checklist and a troubleshooting table.
 It is part of the published npm package, so after installing the component it is available offline.
 
+The human-readable companion is [INTEGRATION.md](INTEGRATION.md) (modes, code for protected and public pages, API calls,
+backend verification, tests). The playbook below links to it.
+
 ## Give it to your agent
 
 **Any agent** (Cursor, Windsurf, Copilot Chat, Aider, Codex, …) — one prompt:

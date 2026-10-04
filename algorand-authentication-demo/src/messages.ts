@@ -2,11 +2,18 @@
 import type { AuthLocale } from 'algorand-authentication-component-vue'
 
 export interface DemoMessages {
+  mode: string
+  modeProtected: string
+  modePublic: string
+  publicHeading: string
+  publicLead: string
+  lockedTitle: string
+  lockedText: string
+  welcomeBack: string
+  guest: string
   appTitle: string
   network: string
   language: string
-  unauthTitle: string
-  unauthText: string
   login: string
   requireAuth: string
   authTitle: string
@@ -39,8 +46,6 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     appTitle: 'Algorand Authentication Demo',
     network: 'Network',
     language: 'Language',
-    unauthTitle: 'Unauthenticated content',
-    unauthText: 'This page can be viewed without signing in.',
     login: 'Login',
     requireAuth: 'Require authentication',
     authTitle: 'Authenticated content',
@@ -67,14 +72,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Verified',
     valid: 'valid ✓',
     invalid: 'INVALID ✗',
-    dataSigned: 'Data signed'
+    dataSigned: 'Data signed',
+    mode: 'Mode',
+    modeProtected: 'Protected app',
+    modePublic: 'Public page',
+    publicHeading: 'Welcome! This page is public',
+    publicLead: 'Anyone can read this. Log in to unlock your account area.',
+    lockedTitle: 'Members area',
+    lockedText: 'Sign in to see your account, sign transactions and sign data.',
+    welcomeBack: 'Welcome back',
+    guest: 'Guest'
   },
   af: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Netwerk',
     language: 'Taal',
-    unauthTitle: 'Inhoud sonder verifikasie',
-    unauthText: 'Hierdie bladsy kan sonder inteken besigtig word.',
     login: 'Teken in',
     requireAuth: 'Vereis verifikasie',
     authTitle: 'Geverifieerde inhoud',
@@ -101,14 +113,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Geverifieer',
     valid: 'geldig ✓',
     invalid: 'ONGELDIG ✗',
-    dataSigned: 'Data onderteken'
+    dataSigned: 'Data onderteken',
+    mode: 'Modus',
+    modeProtected: 'Beskermde toepassing',
+    modePublic: 'Openbare bladsy',
+    publicHeading: 'Welkom! Hierdie bladsy is openbaar',
+    publicLead: 'Enigiemand kan dit lees. Teken in om jou rekeninggedeelte oop te sluit.',
+    lockedTitle: 'Ledegedeelte',
+    lockedText: 'Teken in om jou rekening te sien en transaksies en data te onderteken.',
+    welcomeBack: 'Welkom terug',
+    guest: 'Gas'
   },
   cs: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Síť',
     language: 'Jazyk',
-    unauthTitle: 'Obsah bez přihlášení',
-    unauthText: 'Tuto stránku lze zobrazit i bez přihlášení.',
     login: 'Přihlásit',
     requireAuth: 'Vyžadovat přihlášení',
     authTitle: 'Obsah po přihlášení',
@@ -135,14 +154,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Ověřeno',
     valid: 'platný ✓',
     invalid: 'NEPLATNÝ ✗',
-    dataSigned: 'Data podepsána'
+    dataSigned: 'Data podepsána',
+    mode: 'Režim',
+    modeProtected: 'Chráněná aplikace',
+    modePublic: 'Veřejná stránka',
+    publicHeading: 'Vítejte! Tato stránka je veřejná',
+    publicLead: 'Toto si může přečíst kdokoli. Přihlaste se a odemkněte svůj účet.',
+    lockedTitle: 'Sekce pro členy',
+    lockedText: 'Přihlaste se, abyste viděli svůj účet a podepisovali transakce a data.',
+    welcomeBack: 'Vítejte zpět',
+    guest: 'Host'
   },
   de: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Netzwerk',
     language: 'Sprache',
-    unauthTitle: 'Inhalt ohne Anmeldung',
-    unauthText: 'Diese Seite kann ohne Anmeldung angezeigt werden.',
     login: 'Anmelden',
     requireAuth: 'Anmeldung erforderlich',
     authTitle: 'Inhalt nach Anmeldung',
@@ -169,14 +195,22 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Verifiziert',
     valid: 'gültig ✓',
     invalid: 'UNGÜLTIG ✗',
-    dataSigned: 'Daten signiert'
+    dataSigned: 'Daten signiert',
+    mode: 'Modus',
+    modeProtected: 'Geschützte App',
+    modePublic: 'Öffentliche Seite',
+    publicHeading: 'Willkommen! Diese Seite ist öffentlich',
+    publicLead: 'Jeder kann das lesen. Melden Sie sich an, um Ihren Kontobereich freizuschalten.',
+    lockedTitle: 'Mitgliederbereich',
+    lockedText:
+      'Melden Sie sich an, um Ihr Konto zu sehen sowie Transaktionen und Daten zu signieren.',
+    welcomeBack: 'Willkommen zurück',
+    guest: 'Gast'
   },
   es: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Red',
     language: 'Idioma',
-    unauthTitle: 'Contenido sin autenticar',
-    unauthText: 'Esta página se puede ver sin iniciar sesión.',
     login: 'Iniciar sesión',
     requireAuth: 'Exigir autenticación',
     authTitle: 'Contenido autenticado',
@@ -203,14 +237,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Verificado',
     valid: 'válida ✓',
     invalid: 'NO VÁLIDA ✗',
-    dataSigned: 'Datos firmados'
+    dataSigned: 'Datos firmados',
+    mode: 'Modo',
+    modeProtected: 'Aplicación protegida',
+    modePublic: 'Página pública',
+    publicHeading: '¡Bienvenido! Esta página es pública',
+    publicLead: 'Cualquiera puede leer esto. Inicia sesión para desbloquear tu área de cuenta.',
+    lockedTitle: 'Área de miembros',
+    lockedText: 'Inicia sesión para ver tu cuenta y firmar transacciones y datos.',
+    welcomeBack: 'Bienvenido de nuevo',
+    guest: 'Invitado'
   },
   hu: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Hálózat',
     language: 'Nyelv',
-    unauthTitle: 'Hitelesítés nélküli tartalom',
-    unauthText: 'Ez az oldal bejelentkezés nélkül is megtekinthető.',
     login: 'Bejelentkezés',
     requireAuth: 'Hitelesítés megkövetelése',
     authTitle: 'Hitelesített tartalom',
@@ -237,14 +278,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Ellenőrizve',
     valid: 'érvényes ✓',
     invalid: 'ÉRVÉNYTELEN ✗',
-    dataSigned: 'Adat aláírva'
+    dataSigned: 'Adat aláírva',
+    mode: 'Mód',
+    modeProtected: 'Védett alkalmazás',
+    modePublic: 'Nyilvános oldal',
+    publicHeading: 'Üdvözöljük! Ez az oldal nyilvános',
+    publicLead: 'Bárki elolvashatja. Jelentkezzen be a fiókterület feloldásához.',
+    lockedTitle: 'Tagi terület',
+    lockedText: 'Jelentkezzen be, hogy lássa a fiókját, és tranzakciókat és adatokat írhasson alá.',
+    welcomeBack: 'Üdvözöljük újra',
+    guest: 'Vendég'
   },
   it: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Rete',
     language: 'Lingua',
-    unauthTitle: 'Contenuto non autenticato',
-    unauthText: 'Questa pagina può essere vista senza accedere.',
     login: 'Accedi',
     requireAuth: 'Richiedi autenticazione',
     authTitle: 'Contenuto autenticato',
@@ -271,14 +319,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Verificata',
     valid: 'valida ✓',
     invalid: 'NON VALIDA ✗',
-    dataSigned: 'Dati firmati'
+    dataSigned: 'Dati firmati',
+    mode: 'Modalità',
+    modeProtected: 'App protetta',
+    modePublic: 'Pagina pubblica',
+    publicHeading: 'Benvenuto! Questa pagina è pubblica',
+    publicLead: 'Chiunque può leggerla. Accedi per sbloccare la tua area account.',
+    lockedTitle: 'Area riservata',
+    lockedText: 'Accedi per vedere il tuo account e firmare transazioni e dati.',
+    welcomeBack: 'Bentornato',
+    guest: 'Ospite'
   },
   ko: {
     appTitle: 'Algorand Authentication Demo',
     network: '네트워크',
     language: '언어',
-    unauthTitle: '인증되지 않은 콘텐츠',
-    unauthText: '이 페이지는 로그인하지 않아도 볼 수 있습니다.',
     login: '로그인',
     requireAuth: '인증 필수',
     authTitle: '인증된 콘텐츠',
@@ -305,14 +360,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: '검증됨',
     valid: '유효 ✓',
     invalid: '유효하지 않음 ✗',
-    dataSigned: '데이터가 서명되었습니다'
+    dataSigned: '데이터가 서명되었습니다',
+    mode: '모드',
+    modeProtected: '보호된 앱',
+    modePublic: '공개 페이지',
+    publicHeading: '환영합니다! 이 페이지는 공개 페이지입니다',
+    publicLead: '누구나 볼 수 있습니다. 로그인하면 계정 영역이 열립니다.',
+    lockedTitle: '회원 전용 영역',
+    lockedText: '로그인하면 계정을 확인하고 트랜잭션과 데이터를 서명할 수 있습니다.',
+    welcomeBack: '다시 오신 것을 환영합니다',
+    guest: '게스트'
   },
   nl: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Netwerk',
     language: 'Taal',
-    unauthTitle: 'Niet-geauthenticeerde inhoud',
-    unauthText: 'Deze pagina is te bekijken zonder in te loggen.',
     login: 'Inloggen',
     requireAuth: 'Authenticatie vereisen',
     authTitle: 'Geauthenticeerde inhoud',
@@ -339,14 +401,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Geverifieerd',
     valid: 'geldig ✓',
     invalid: 'ONGELDIG ✗',
-    dataSigned: 'Gegevens ondertekend'
+    dataSigned: 'Gegevens ondertekend',
+    mode: 'Modus',
+    modeProtected: 'Beveiligde app',
+    modePublic: 'Openbare pagina',
+    publicHeading: 'Welkom! Deze pagina is openbaar',
+    publicLead: 'Iedereen kan dit lezen. Log in om je accountgedeelte te ontgrendelen.',
+    lockedTitle: 'Ledengedeelte',
+    lockedText: 'Log in om je account te zien en transacties en gegevens te ondertekenen.',
+    welcomeBack: 'Welkom terug',
+    guest: 'Gast'
   },
   pl: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Sieć',
     language: 'Język',
-    unauthTitle: 'Treść bez uwierzytelnienia',
-    unauthText: 'Tę stronę można wyświetlić bez logowania.',
     login: 'Zaloguj',
     requireAuth: 'Wymagaj uwierzytelnienia',
     authTitle: 'Treść po uwierzytelnieniu',
@@ -373,14 +442,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Zweryfikowano',
     valid: 'prawidłowy ✓',
     invalid: 'NIEPRAWIDŁOWY ✗',
-    dataSigned: 'Dane podpisane'
+    dataSigned: 'Dane podpisane',
+    mode: 'Tryb',
+    modeProtected: 'Aplikacja chroniona',
+    modePublic: 'Strona publiczna',
+    publicHeading: 'Witamy! Ta strona jest publiczna',
+    publicLead: 'Każdy może to przeczytać. Zaloguj się, aby odblokować obszar konta.',
+    lockedTitle: 'Strefa członków',
+    lockedText: 'Zaloguj się, aby zobaczyć konto oraz podpisywać transakcje i dane.',
+    welcomeBack: 'Witaj ponownie',
+    guest: 'Gość'
   },
   ru: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Сеть',
     language: 'Язык',
-    unauthTitle: 'Содержимое без аутентификации',
-    unauthText: 'Эту страницу можно просматривать без входа.',
     login: 'Войти',
     requireAuth: 'Требовать аутентификацию',
     authTitle: 'Содержимое после аутентификации',
@@ -407,14 +483,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Проверено',
     valid: 'действительна ✓',
     invalid: 'НЕДЕЙСТВИТЕЛЬНА ✗',
-    dataSigned: 'Данные подписаны'
+    dataSigned: 'Данные подписаны',
+    mode: 'Режим',
+    modeProtected: 'Защищённое приложение',
+    modePublic: 'Публичная страница',
+    publicHeading: 'Добро пожаловать! Эта страница публичная',
+    publicLead: 'Это может прочитать любой. Войдите, чтобы открыть раздел аккаунта.',
+    lockedTitle: 'Раздел для участников',
+    lockedText: 'Войдите, чтобы увидеть аккаунт, подписывать транзакции и данные.',
+    welcomeBack: 'С возвращением',
+    guest: 'Гость'
   },
   sk: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Sieť',
     language: 'Jazyk',
-    unauthTitle: 'Obsah bez prihlásenia',
-    unauthText: 'Túto stránku si môžete pozrieť aj bez prihlásenia.',
     login: 'Prihlásiť',
     requireAuth: 'Vyžadovať prihlásenie',
     authTitle: 'Obsah po prihlásení',
@@ -441,14 +524,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Overené',
     valid: 'platné ✓',
     invalid: 'NEPLATNÉ ✗',
-    dataSigned: 'Dáta podpísané'
+    dataSigned: 'Dáta podpísané',
+    mode: 'Režim',
+    modeProtected: 'Chránená aplikácia',
+    modePublic: 'Verejná stránka',
+    publicHeading: 'Vitajte! Táto stránka je verejná',
+    publicLead: 'Toto si môže prečítať ktokoľvek. Prihláste sa a odomknite svoj účet.',
+    lockedTitle: 'Sekcia pre členov',
+    lockedText: 'Prihláste sa, aby ste videli svoj účet, podpisovali transakcie a dáta.',
+    welcomeBack: 'Vitajte späť',
+    guest: 'Hosť'
   },
   tr: {
     appTitle: 'Algorand Authentication Demo',
     network: 'Ağ',
     language: 'Dil',
-    unauthTitle: 'Kimliği doğrulanmamış içerik',
-    unauthText: 'Bu sayfa giriş yapmadan görüntülenebilir.',
     login: 'Giriş yap',
     requireAuth: 'Kimlik doğrulamayı zorunlu kıl',
     authTitle: 'Kimliği doğrulanmış içerik',
@@ -475,14 +565,21 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: 'Doğrulandı',
     valid: 'geçerli ✓',
     invalid: 'GEÇERSİZ ✗',
-    dataSigned: 'Veri imzalandı'
+    dataSigned: 'Veri imzalandı',
+    mode: 'Mod',
+    modeProtected: 'Korumalı uygulama',
+    modePublic: 'Herkese açık sayfa',
+    publicHeading: 'Hoş geldiniz! Bu sayfa herkese açık',
+    publicLead: 'Bunu herkes okuyabilir. Hesap alanınızın kilidini açmak için giriş yapın.',
+    lockedTitle: 'Üyeler alanı',
+    lockedText: 'Hesabınızı görmek, işlem ve veri imzalamak için giriş yapın.',
+    welcomeBack: 'Tekrar hoş geldiniz',
+    guest: 'Misafir'
   },
   zh: {
     appTitle: 'Algorand Authentication Demo',
     network: '网络',
     language: '语言',
-    unauthTitle: '未认证内容',
-    unauthText: '无需登录即可查看此页面。',
     login: '登录',
     requireAuth: '要求认证',
     authTitle: '已认证内容',
@@ -507,6 +604,15 @@ export const demoMessages: Record<AuthLocale, DemoMessages> = {
     verified: '已验证',
     valid: '有效 ✓',
     invalid: '无效 ✗',
-    dataSigned: '数据已签名'
+    dataSigned: '数据已签名',
+    mode: '模式',
+    modeProtected: '受保护应用',
+    modePublic: '公开页面',
+    publicHeading: '欢迎！此页面是公开的',
+    publicLead: '任何人都可以阅读。登录以解锁您的账户区域。',
+    lockedTitle: '会员区',
+    lockedText: '登录后可查看账户并签署交易和数据。',
+    welcomeBack: '欢迎回来',
+    guest: '访客'
   }
 }

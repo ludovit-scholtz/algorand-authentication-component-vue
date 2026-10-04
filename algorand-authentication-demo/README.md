@@ -17,6 +17,8 @@ pnpm --filter algorand-authentication-demo dev
 Open <http://localhost:5173> (the component must be built first: `pnpm build` at the root). Set `VITE_WC_PROJECT_ID` (see `.env.example`) to use your own
 WalletConnect Cloud project id; the committed fallback is meant for local demos only.
 
+The page has a **Mode** switch (`?mode=protected` default, `?mode=public`): protected shows only the sign-in screen until the user signs in; public shows a page with a Login button, a locked members area and a *Guest* chip, and the content (and header chip) changes once the user is authenticated. See [`docs/INTEGRATION.md`](../algorand-authentication-component-vue/docs/INTEGRATION.md).
+
 What to look at:
 
 - [`src/main.ts`](src/main.ts) — wallet registration for use-wallet 5, extra networks (Voi, Aramid), Node globals
@@ -38,6 +40,7 @@ The Playwright config builds the demo with `VITE_E2E_MNEMONIC_WALLET=true` and s
 | Spec                                          | Covers                                                                                                                                                                              |
 | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`e2e/component.spec.ts`](e2e/component.spec.ts) | Sign-in screen and wallet list, form validation, password reveal, registration, axe accessibility scan, ARC-76 login with an independently derived address and cryptographically verified ARC-14 header, password dialog (wrong password, cancel, Escape), optional authentication, wallet sign-in through use-wallet 5 (testnet mnemonic adapter), wallet errors, network-dependent wallet list. Runs on a desktop and a mobile viewport with a stubbed algod. |
+| [`e2e/public-page.spec.ts`](e2e/public-page.spec.ts) | **Public page vs protected app**: guest view without a sign-in screen, Login buttons open it and *Go back* closes it, content/header chip change after sign-in and after logout, mode switch and `?mode`, combination with `?lang`, no horizontal overflow on a phone. |
 | [`e2e/locales.spec.ts`](e2e/locales.spec.ts) | **Localization**: catalog completeness and placeholders, and for each of the 14 languages the sign-in screen, validation, registration, password toggle, the signed-in demo, transaction and data signing dialogs with errors, toasts and logout; language picker, `?lang`, remembered language, browser-language detection per locale, unsupported-language fallback, no horizontal overflow with long translations. |
 | [`e2e/biatec-live.spec.ts`](e2e/biatec-live.spec.ts) | **Live Biatec Wallet**: creates a throw-away wallet on <https://wallet.biatec.io>, pairs it with the demo via the WalletConnect URI of the built-in dialog, approves the ARC-14 request (checks the realm shown in the wallet and the returned header), signs a transaction, signs raw ARC-60 data (verified independently in Node), logs out and checks the wallet session disappears; plus the “user rejects in the wallet” path and the language of Biatec's connect dialog for all 14 languages (the four DEX-only ones fall back to English). |
 

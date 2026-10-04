@@ -15,12 +15,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ludovit-scholtz/algorand-authentication-component-vue.git"
+    "url": "git+https://github.com/ludovit-scholtz/algorand-authentication-component-vue.git",
+    "directory": "algorand-authentication-component-vue"
   },
   "files": [
     "dist",
     "docs",
-    "skill"
+    "skill",
+    "llms.txt",
+    "CHANGELOG.md"
   ],
   "sideEffects": [
     "**/*.css"
