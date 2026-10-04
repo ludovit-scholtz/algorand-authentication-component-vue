@@ -1,0 +1,18 @@
+# algorand-authentication-component-vue
+
+> Vue 3 sign-in component for Algorand / AVM apps: ARC-14 authentication with @txnlab/use-wallet 5 wallets
+> (Biatec, Pera, Defly, Exodus, Kibisis, Lute, ...) or ARC-76 email + password accounts. Also signs
+> transactions and ARC-60 raw data. 14 languages. No PrimeVue / Tailwind needed.
+
+Read these in order when integrating the component into an app:
+
+- [Integration guide](docs/INTEGRATION.md): protected app vs public page with a Login button, wallet registration, API calls, backend verification, signing, localization, tests, troubleshooting
+- [AI agent playbook](skill/algorand-authentication-integration/SKILL.md): step-by-step instructions with context-gathering questions, verification checklist and a troubleshooting table
+- [README](README.md): install, props, events, composable API, styling, localization
+- [Migration from 1.x](docs/MIGRATION.md)
+- [Changelog](CHANGELOG.md)
+
+Rules: Vue 3 only; peer dependencies vue ^3.5, @txnlab/use-wallet-vue ^5, algosdk ^3.5; import
+`algorand-authentication-component-vue/style.css` once; register wallets with factory functions
+(`wallets: [biatec({ projectId }), pera()]`), never the v4 `WalletId` enums; send
+`auth.authStore.arc14Header` as the `Authorization` header and verify it on the server.

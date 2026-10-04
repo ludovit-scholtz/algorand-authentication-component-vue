@@ -8,6 +8,7 @@ header it can verify without any shared secret.
 
 - **v2** — requires use-wallet 5, has **no PrimeVue / Tailwind dependency** (self-contained CSS), ships
   TypeScript types, and an [AI integration guide](docs/AI_INTEGRATION.md).
+- **[Integration guide](https://github.com/ludovit-scholtz/algorand-authentication-component-vue/blob/main/algorand-authentication-component-vue/docs/INTEGRATION.md)** — protected app *and* public page with a Login button, API calls, backend verification, signing, tests; written for developers and AI agents.
 - Upgrading from 1.x? Read [docs/MIGRATION.md](docs/MIGRATION.md) (5 minutes).
 - **Live demo: <https://algorand-authentication-demo-seven.vercel.app>** (ARC-76 sign-in, wallets incl. Biatec, transaction + raw data signing, 14 languages) · demo source:
   [`algorand-authentication-demo`](https://github.com/ludovit-scholtz/algorand-authentication-component-vue/tree/main/algorand-authentication-demo)
@@ -23,6 +24,10 @@ pnpm add @txnlab/use-wallet-pera @txnlab/use-wallet-defly biatec-wallet-use-wall
 Peer dependencies: `vue ^3.5`, `@txnlab/use-wallet-vue ^5`, `algosdk ^3.5` (plus a small `tweetnacl` dependency for ARC-60).
 
 ## Quick start
+
+> Two usage modes — a **protected app** (`authorizedOnlyAccess`) and a **public page with a Login button** whose content
+> changes once the user is signed in (below, and step by step in the
+> [integration guide](https://github.com/ludovit-scholtz/algorand-authentication-component-vue/blob/main/algorand-authentication-component-vue/docs/INTEGRATION.md#4-public-page-with-a-login-button)).
 
 `main.ts` — register the wallets once and import the component's stylesheet:
 
@@ -68,6 +73,18 @@ async function callApi() {
 With `authorizedOnlyAccess` the sign-in screen replaces the slot until the user is authenticated.
 Without it the slot is always rendered and you open the sign-in screen yourself with
 `auth.authenticate()`.
+
+**Public page with a Login button** — the content changes with `isAuthenticated`:
+
+```vue
+<AlgorandAuthentication arc14Realm="MyApp">
+  <button v-if="!auth.authStore.isAuthenticated" @click="auth.authenticate()">Log in</button>
+  <button v-else @click="auth.logout()">Log out</button>
+
+  <PublicTeaser v-if="!auth.authStore.isAuthenticated" />
+  <MemberArea v-else />
+</AlgorandAuthentication>
+```
 
 ## `<AlgorandAuthentication>`
 
@@ -247,7 +264,8 @@ pnpm test:e2e          # Playwright against the demo, including the live Biatec 
 
 ## For AI coding agents
 
-[`docs/AI_INTEGRATION.md`](docs/AI_INTEGRATION.md) explains how to hand
+Start with the [integration guide](https://github.com/ludovit-scholtz/algorand-authentication-component-vue/blob/main/algorand-authentication-component-vue/docs/INTEGRATION.md) (also shipped in the npm package as `docs/INTEGRATION.md`,
+indexed in `llms.txt`). [`docs/AI_INTEGRATION.md`](docs/AI_INTEGRATION.md) explains how to hand
 [`skill/algorand-authentication-integration/SKILL.md`](skill/algorand-authentication-integration/SKILL.md) —
 a self-contained, step-by-step playbook — to Claude Code, Cursor, Copilot or any other agent so it can
 integrate this component into your project correctly on the first try. It ships inside the npm package.

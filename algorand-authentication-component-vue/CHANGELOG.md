@@ -20,7 +20,7 @@
 - Localization: `locale` / `messages` props and a catalog for 14 languages (af cs de en es hu it ko nl pl ru sk tr zh = Biatec Wallet + Biatec DEX); exports `SUPPORTED_LOCALES`, `LOCALE_NAMES`, `resolveLocale`, `authMessages`, `formatMessage`.
 - ARC-60 raw data signing: `signData()` / `canSignData()` (wallets via use-wallet, ARC-76 accounts via the password dialog), `signArc60`, `verifyArc60`.
 - Exports `arc14`, `arc14Header`, `deriveArc76Account`; `sign()` signer argument is optional.
-- AI integration guide and portable agent skill (`skill/algorand-authentication-integration/SKILL.md`).
+- Integration guide (`docs/INTEGRATION.md`, protected app and public page with a Login button), `llms.txt`, AI integration guide and portable agent skill (`skill/algorand-authentication-integration/SKILL.md`).
 - Unit/component tests (Vitest) and Playwright end-to-end tests in the demo, including the live Biatec Wallet.
 
 ### Fixed

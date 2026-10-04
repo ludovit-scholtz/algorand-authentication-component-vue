@@ -86,6 +86,9 @@ for (const locale of SUPPORTED_LOCALES) {
       ).toBeVisible()
       // the demo page chrome and language picker
       await expect(page.getByTestId('lang-select')).toHaveValue(locale)
+      await expect(
+        page.locator('label').filter({ has: page.getByTestId('mode-select') })
+      ).toContainText(d.mode)
       await expect(page.getByTestId('lang-select').locator('option:checked')).toHaveText(
         LOCALE_NAMES[locale]
       )
@@ -124,6 +127,8 @@ for (const locale of SUPPORTED_LOCALES) {
       await expect(page.getByTestId('authenticated')).toBeVisible({ timeout: 30_000 })
       const authenticated = page.getByTestId('authenticated')
       await expect(page.getByRole('heading', { name: d.authTitle })).toBeVisible()
+      await expect(page.getByTestId('welcome')).toContainText(d.welcomeBack)
+      await expect(page.getByTestId('header-logout')).toHaveText(d.logout)
       for (const text of [m.email, d.account, d.walletProvider, d.headerLabel, d.logout]) {
         await expect(authenticated.getByText(text, { exact: true }).first()).toBeVisible()
       }
@@ -189,8 +194,12 @@ for (const locale of SUPPORTED_LOCALES) {
       await page.getByTestId('toggle-requirement').click()
       await expect(page.getByTestId('toggle-requirement')).toHaveText(d.enableReq)
       await page.getByTestId('logout').click()
-      await expect(page.getByRole('heading', { name: d.unauthTitle })).toBeVisible()
-      await expect(page.getByText(d.unauthText)).toBeVisible()
+      await expect(page.getByRole('heading', { name: d.publicHeading })).toBeVisible()
+      await expect(page.getByText(d.publicLead)).toBeVisible()
+      await expect(page.getByRole('heading', { name: d.lockedTitle })).toBeVisible()
+      await expect(page.getByText(d.lockedText)).toBeVisible()
+      await expect(page.getByTestId('chip-guest')).toHaveText(d.guest)
+      await expect(page.getByTestId('header-login')).toHaveText(d.login)
       await expect(page.getByTestId('login')).toHaveText(d.login)
       await expect(page.getByTestId('toggle-requirement')).toHaveText(d.requireAuth)
     })

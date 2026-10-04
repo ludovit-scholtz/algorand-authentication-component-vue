@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import algosdk from 'algosdk'
 import { Buffer } from 'buffer'
 import { useNetwork, useWallet } from '@txnlab/use-wallet-vue'
@@ -31,8 +31,18 @@ const { activeNetwork, networkConfig, setActiveNetwork } = useNetwork()
 
 const networks = computed(() => Object.keys(networkConfig))
 
+/**
+ * Two ways to use the component, switchable at the top of the page (`?mode=public|protected`):
+ * - protected: `authorizedOnlyAccess` - the sign-in screen replaces the whole app until the user signs in
+ * - public: the page renders for everybody and shows a Login button; the content changes once
+ *   `auth.authStore.isAuthenticated` becomes true (`auth.authenticate()` opens the sign-in screen)
+ */
+const initialMode = new URLSearchParams(window.location.search).get('mode') === 'public'
+
+const shortAddress = (address: string) => `${address.slice(0, 6)}…${address.slice(-6)}`
+
 const state = reactive({
-  requireAuthentication: true,
+  requireAuthentication: !initialMode,
   lastSignedTransaction: '',
   signing: false,
   dataToSign: 'Hello from the Algorand Authentication Demo',
@@ -44,6 +54,15 @@ const state = reactive({
     valid: boolean
   }
 })
+
+watch(
+  () => state.requireAuthentication,
+  (protectedMode) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('mode', protectedMode ? 'protected' : 'public')
+    window.history.replaceState(null, '', url)
+  }
+)
 
 function onNotification(e: INotification) {
   addToast(e.severity, e.message)
@@ -107,19 +126,35 @@ const secondaryButton =
 
 <template>
   <ToastHost />
-  <label
-    class="fixed top-3 left-3 z-[1500] flex items-center gap-2 rounded-md bg-white/90 px-2 py-1 text-xs text-gray-700 shadow"
-  >
-    {{ t('language') }}
-    <select
-      class="rounded border border-gray-300 bg-white px-1 py-0.5 text-gray-900"
-      data-testid="lang-select"
-      :value="locale"
-      @change="onLanguage"
-    >
-      <option v-for="id in SUPPORTED_LOCALES" :key="id" :value="id">{{ LOCALE_NAMES[id] }}</option>
-    </select>
-  </label>
+  <div class="absolute top-1 left-3 z-[1500] flex flex-wrap gap-2 text-xs text-gray-700">
+    <label class="flex items-center gap-2 rounded-md bg-white/90 px-2 py-1 shadow">
+      {{ t('language') }}
+      <select
+        class="rounded border border-gray-300 bg-white px-1 py-0.5 text-gray-900"
+        data-testid="lang-select"
+        :value="locale"
+        @change="onLanguage"
+      >
+        <option v-for="id in SUPPORTED_LOCALES" :key="id" :value="id">
+          {{ LOCALE_NAMES[id] }}
+        </option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 rounded-md bg-white/90 px-2 py-1 shadow">
+      {{ t('mode') }}
+      <select
+        class="rounded border border-gray-300 bg-white px-1 py-0.5 text-gray-900"
+        data-testid="mode-select"
+        :value="state.requireAuthentication ? 'protected' : 'public'"
+        @change="
+          state.requireAuthentication = ($event.target as HTMLSelectElement).value === 'protected'
+        "
+      >
+        <option value="protected">{{ t('modeProtected') }}</option>
+        <option value="public">{{ t('modePublic') }}</option>
+      </select>
+    </label>
+  </div>
   <AlgorandAuthentication
     arc14Realm="Demo"
     cover-image="/auth-cover.jpg"
@@ -127,9 +162,44 @@ const secondaryButton =
     :authorizedOnlyAccess="state.requireAuthentication"
     @onNotification="onNotification"
   >
-    <main class="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 px-4 py-10">
-      <header class="flex items-center justify-between gap-4">
+    <main class="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 px-4 pt-14 pb-10">
+      <header class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
         <h1 class="text-2xl font-bold text-gray-900">{{ t('appTitle') }}</h1>
+        <div class="flex items-center gap-3" data-testid="user-chip">
+          <template v-if="auth.authStore.isAuthenticated">
+            <span
+              class="rounded-full bg-green-100 px-3 py-1 font-mono text-xs text-green-800"
+              :title="auth.authStore.account"
+              data-testid="chip-account"
+            >
+              {{ shortAddress(auth.authStore.account) }}
+            </span>
+            <button
+              type="button"
+              :class="[secondaryButton, '!px-3 !py-1 text-sm']"
+              data-testid="header-logout"
+              @click="auth.logout()"
+            >
+              {{ t('logout') }}
+            </button>
+          </template>
+          <template v-else>
+            <span
+              class="rounded-full bg-gray-200 px-3 py-1 text-xs text-gray-700"
+              data-testid="chip-guest"
+            >
+              {{ t('guest') }}
+            </span>
+            <button
+              type="button"
+              :class="[primaryButton, '!px-3 !py-1 text-sm']"
+              data-testid="header-login"
+              @click="auth.authenticate()"
+            >
+              {{ t('login') }}
+            </button>
+          </template>
+        </div>
         <label class="flex items-center gap-2 text-sm text-gray-600">
           {{ t('network') }}
           <select
@@ -145,30 +215,53 @@ const secondaryButton =
 
       <section
         v-if="!auth.authStore.isAuthenticated"
-        class="rounded-lg bg-white p-6 shadow-md"
+        class="flex flex-col gap-6"
         data-testid="unauthenticated"
       >
-        <h2 class="text-xl font-semibold">{{ t('unauthTitle') }}</h2>
-        <p class="mt-2 text-gray-600">{{ t('unauthText') }}</p>
-        <button
-          type="button"
-          :class="[primaryButton, 'mt-4']"
-          data-testid="login"
-          @click="auth.authenticate()"
+        <div class="rounded-lg bg-white p-6 shadow-md" data-testid="public-content">
+          <h2 class="text-xl font-semibold">{{ t('publicHeading') }}</h2>
+          <p class="mt-2 text-gray-600">{{ t('publicLead') }}</p>
+          <button
+            type="button"
+            :class="[primaryButton, 'mt-4']"
+            data-testid="login"
+            @click="auth.authenticate()"
+          >
+            {{ t('login') }}
+          </button>
+          <button
+            type="button"
+            :class="[secondaryButton, 'mt-4 ml-2']"
+            data-testid="toggle-requirement"
+            @click="state.requireAuthentication = true"
+          >
+            {{ t('requireAuth') }}
+          </button>
+        </div>
+        <div
+          class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-gray-600"
+          data-testid="locked-area"
         >
-          {{ t('login') }}
-        </button>
-        <button
-          type="button"
-          :class="[secondaryButton, 'mt-4 ml-2']"
-          data-testid="toggle-requirement"
-          @click="state.requireAuthentication = true"
-        >
-          {{ t('requireAuth') }}
-        </button>
+          <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-700">
+            <span aria-hidden="true">🔒</span> {{ t('lockedTitle') }}
+          </h2>
+          <p class="mt-1 text-sm">{{ t('lockedText') }}</p>
+          <div class="mt-4 space-y-2" aria-hidden="true">
+            <div class="h-3 w-3/4 rounded bg-gray-200"></div>
+            <div class="h-3 w-1/2 rounded bg-gray-200"></div>
+            <div class="h-3 w-2/3 rounded bg-gray-200"></div>
+          </div>
+        </div>
       </section>
 
       <section v-else class="flex flex-col gap-6" data-testid="authenticated">
+        <p
+          class="rounded-lg bg-green-50 px-4 py-3 text-green-800 ring-1 ring-green-200"
+          data-testid="welcome"
+        >
+          {{ t('welcomeBack') }},
+          <span class="font-mono">{{ shortAddress(auth.authStore.account) }}</span>
+        </p>
         <div class="rounded-lg bg-white p-6 shadow-md">
           <h2 class="text-xl font-semibold">{{ t('authTitle') }}</h2>
           <dl class="mt-4 grid gap-4 text-sm sm:grid-cols-[10rem_1fr]">
