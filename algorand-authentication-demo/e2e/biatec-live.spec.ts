@@ -102,7 +102,7 @@ test.describe('Biatec Wallet', () => {
       await route.fulfill({ response: await route.fetch({ url }) })
     })
     dapp = await context.newPage()
-    await dapp.goto(`${DAPP_ORIGIN}/`)
+    await dapp.goto(`${DAPP_ORIGIN}/?mode=protected`)
     await expect(dapp.getByTestId('aa-screen')).toBeVisible()
   })
 
@@ -232,7 +232,7 @@ test.describe('Biatec connect dialog language', () => {
         await route.fulfill({ response: await route.fetch({ url }) })
       })
       const page = await context.newPage()
-      await page.goto(`${DAPP_ORIGIN}/?lang=${locale}`)
+      await page.goto(`${DAPP_ORIGIN}/?lang=${locale}&mode=protected`)
       // the component's own wallet button is translated, the wallet name is not
       await expect(page.getByTestId('aa-wallet-biatec')).toContainText('Biatec Wallet')
       await openBiatecDialog(page)

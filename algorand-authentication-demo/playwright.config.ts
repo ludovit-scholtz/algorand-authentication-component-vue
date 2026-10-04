@@ -30,6 +30,8 @@ export default defineConfig({
     {
       // Talks to the real https://wallet.biatec.io and the public relay / algod nodes.
       name: 'biatec-live',
+      // sequential: many parallel pairing requests get throttled by the public WalletConnect relay
+      fullyParallel: false,
       testMatch: /biatec-live\.spec\.ts/,
       timeout: 180_000,
       use: { ...devices['Desktop Chrome'] }

@@ -17,7 +17,7 @@ pnpm --filter algorand-authentication-demo dev
 Open <http://localhost:5173> (the component must be built first: `pnpm build` at the root). Set `VITE_WC_PROJECT_ID` (see `.env.example`) to use your own
 WalletConnect Cloud project id; the committed fallback is meant for local demos only.
 
-The page has a **Mode** switch (`?mode=protected` default, `?mode=public`): protected shows only the sign-in screen until the user signs in; public shows a page with a Login button, a locked members area and a *Guest* chip, and the content (and header chip) changes once the user is authenticated. See [`docs/INTEGRATION.md`](../algorand-authentication-component-vue/docs/INTEGRATION.md).
+The demo **starts on the public page** and has a **Mode** switch (`?mode=public` default, `?mode=protected`): public shows a page with a Login button, a locked members area and a *Guest* chip, and the content (and header chip) changes once the user is authenticated; protected shows only the sign-in screen until the user signs in. See [`docs/INTEGRATION.md`](../algorand-authentication-component-vue/docs/INTEGRATION.md).
 
 What to look at:
 

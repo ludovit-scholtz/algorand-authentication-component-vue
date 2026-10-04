@@ -18,7 +18,7 @@ const address = account.addr.toString()
 
 test.beforeEach(async ({ page }) => {
   await mockAlgod(page)
-  await page.goto('/')
+  await page.goto('/?mode=protected')
   await expect(page.getByTestId('aa-screen')).toBeVisible()
 })
 
