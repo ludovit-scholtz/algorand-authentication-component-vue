@@ -64,7 +64,7 @@ for (const locale of SUPPORTED_LOCALES) {
   test.describe(`locale ${locale} (${LOCALE_NAMES[locale]})`, () => {
     test.beforeEach(async ({ page }) => {
       await mockAlgod(page)
-      await page.goto(`/?lang=${locale}`)
+      await page.goto(`/?lang=${locale}&mode=protected`)
       await expect(page.getByTestId('aa-screen')).toBeVisible()
     })
 
@@ -212,32 +212,32 @@ test.describe('language selection', () => {
   })
 
   test('the picker switches language, updates the URL and is remembered', async ({ page }) => {
-    await page.goto('/?lang=en')
+    await page.goto('/?lang=en&mode=protected')
     await expect(page.getByTestId('aa-title')).toHaveText(messages.en.signIn)
     await page.getByTestId('lang-select').selectOption('sk')
     await expect(page).toHaveURL(/lang=sk/)
     await expect(page.getByTestId('aa-title')).toHaveText(messages.sk.signIn)
     // remembered without the query parameter
-    await page.goto('/')
+    await page.goto('/?mode=protected')
     await expect(page.getByTestId('aa-title')).toHaveText(messages.sk.signIn)
     await expect(page.locator('html')).toHaveAttribute('lang', 'sk')
   })
 
   test('the query parameter beats the remembered language', async ({ page }) => {
-    await page.goto('/?lang=de')
-    await page.goto('/?lang=ko')
+    await page.goto('/?lang=de&mode=protected')
+    await page.goto('/?lang=ko&mode=protected')
     await expect(page.getByTestId('aa-title')).toHaveText(messages.ko.signIn)
   })
 
   test('falls back to English for an unsupported language', async ({ page }) => {
-    await page.goto('/?lang=fr')
+    await page.goto('/?lang=fr&mode=protected')
     await expect(page.getByTestId('aa-title')).toHaveText(messages.en.signIn)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
   })
 
   test('long translations do not overflow the layout', async ({ page }) => {
     for (const locale of ['de', 'ru', 'hu', 'af']) {
-      await page.goto(`/?lang=${locale}`)
+      await page.goto(`/?lang=${locale}&mode=protected`)
       await expect(page.getByTestId('aa-screen')).toBeVisible()
       for (const width of [1280, 390]) {
         await page.setViewportSize({ width, height: 900 })
@@ -256,7 +256,7 @@ test.describe('browser language detection', () => {
       const context = await browser.newContext({ locale: `${locale}-${locale.toUpperCase()}` })
       const page = await context.newPage()
       await mockAlgod(page)
-      await page.goto('/')
+      await page.goto('/?mode=protected')
       await expect(page.getByTestId('aa-title')).toHaveText(messages[locale].signIn)
       await expect(page.getByTestId('lang-select')).toHaveValue(locale)
       await context.close()
@@ -266,7 +266,7 @@ test.describe('browser language detection', () => {
   test('uses English for an unsupported browser language', async ({ browser }) => {
     const context = await browser.newContext({ locale: 'fr-FR' })
     const page = await context.newPage()
-    await page.goto('/')
+    await page.goto('/?mode=protected')
     await expect(page.getByTestId('aa-title')).toHaveText(messages.en.signIn)
     await context.close()
   })

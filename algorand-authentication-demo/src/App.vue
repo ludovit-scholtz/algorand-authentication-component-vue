@@ -32,17 +32,18 @@ const { activeNetwork, networkConfig, setActiveNetwork } = useNetwork()
 const networks = computed(() => Object.keys(networkConfig))
 
 /**
- * Two ways to use the component, switchable at the top of the page (`?mode=public|protected`):
+ * Two ways to use the component, switchable at the top of the page (`?mode=public|protected`);
+ * the demo starts on the public page:
  * - protected: `authorizedOnlyAccess` - the sign-in screen replaces the whole app until the user signs in
  * - public: the page renders for everybody and shows a Login button; the content changes once
  *   `auth.authStore.isAuthenticated` becomes true (`auth.authenticate()` opens the sign-in screen)
  */
-const initialMode = new URLSearchParams(window.location.search).get('mode') === 'public'
+const startProtected = new URLSearchParams(window.location.search).get('mode') === 'protected'
 
 const shortAddress = (address: string) => `${address.slice(0, 6)}…${address.slice(-6)}`
 
 const state = reactive({
-  requireAuthentication: !initialMode,
+  requireAuthentication: startProtected,
   lastSignedTransaction: '',
   signing: false,
   dataToSign: 'Hello from the Algorand Authentication Demo',

@@ -114,9 +114,20 @@ test('has no horizontal overflow on a phone, as guest or signed in', async ({ pa
   expect(await overflow()).toBeLessThanOrEqual(0)
 })
 
-test.describe('protected app (default)', () => {
+test('the demo starts on the public page for guests', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByTestId('unauthenticated')).toBeVisible()
+  await expect(page.getByTestId('aa-screen')).toHaveCount(0)
+  await expect(page.getByTestId('mode-select')).toHaveValue('public')
+  await expect(page.getByTestId('chip-guest')).toBeVisible()
+  await expect(page.getByTestId('header-login')).toBeVisible()
+  await expect(page.getByRole('heading', { name: d.publicHeading })).toBeVisible()
+  await expect(page.getByTestId('locked-area')).toBeVisible()
+})
+
+test.describe('protected app (?mode=protected)', () => {
   test('shows only the sign-in screen until the user signs in', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/?mode=protected')
     await expect(page.getByTestId('aa-screen')).toBeVisible()
     await expect(page.getByTestId('mode-select')).toHaveValue('protected')
     await expect(page.getByTestId('unauthenticated')).toHaveCount(0)
