@@ -9,7 +9,7 @@ header it can verify without any shared secret.
 - **v2** — requires use-wallet 5, has **no PrimeVue / Tailwind dependency** (self-contained CSS), ships
   TypeScript types, and an [AI integration guide](docs/AI_INTEGRATION.md).
 - Upgrading from 1.x? Read [docs/MIGRATION.md](docs/MIGRATION.md) (5 minutes).
-- Live demo: <https://algorand-authentication-demo.vercel.app/> · demo source:
+- **Live demo: <https://algorand-authentication-demo-seven.vercel.app>** (ARC-76 sign-in, wallets incl. Biatec, transaction + raw data signing, 14 languages) · demo source:
   [`algorand-authentication-demo`](https://github.com/ludovit-scholtz/algorand-authentication-component-vue/tree/main/algorand-authentication-demo)
 
 ## Install
