@@ -266,6 +266,7 @@ The component ships a light and a dark palette (each token is one CSS `light-dar
 <AlgorandAuthentication arc14Realm="MyApp" :theme="isDark ? 'dark' : 'light'" />
 ```
 
+If a `.dark` and a `.light` ancestor are both present, `.light` wins — pass `theme` explicitly in that case.
 The prop sets `data-theme` on the sign-in screen and on the password dialog; your slotted app content is
 **not** touched — theme it with your own styles. Requires `light-dark()` support (Chrome/Edge 123, Firefox 120,
 Safari 17.5, i.e. every browser since spring 2024).

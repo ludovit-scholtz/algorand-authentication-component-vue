@@ -16,7 +16,7 @@ import {
 
 import ToastHost from './components/ToastHost.vue'
 import { addToast } from './toast'
-import { resolvedTheme, setTheme, themeChoice, type ThemeChoice } from './theme'
+import { setTheme, themeChoice, type ThemeChoice } from './theme'
 import { currentLocale, demoMessages, format, switchLocale, type DemoMessages } from './i18n'
 
 const locale = currentLocale()
@@ -176,7 +176,7 @@ const secondaryButton =
     arc14Realm="Demo"
     cover-image="/auth-cover.jpg"
     :locale="locale"
-    :theme="resolvedTheme"
+    :theme="themeChoice === 'system' ? 'auto' : themeChoice"
     :authorizedOnlyAccess="state.requireAuthentication"
     @onNotification="onNotification"
   >

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, useAttrs } from 'vue'
 import algosdk from 'algosdk'
 import { useWallet, type Wallet } from '@txnlab/use-wallet-vue'
 
@@ -14,6 +14,7 @@ import { authStore } from '../store/authStore'
 import type { INotification } from '../types'
 
 defineOptions({ inheritAttrs: false })
+const attrs = useAttrs()
 
 const props = withDefaults(
   defineProps<{
@@ -83,7 +84,10 @@ const screenStyle = computed(() =>
 )
 
 // `auto` leaves the attribute off so the stylesheet follows prefers-color-scheme / a host .dark class
-const themeAttr = computed(() => (props.theme === 'auto' ? undefined : props.theme))
+// (an explicit data-theme passed by the host as a plain attribute is kept)
+const themeAttr = computed(() =>
+  props.theme === 'auto' ? (attrs['data-theme'] as string | undefined) : props.theme
+)
 
 const language = computed(() => resolveLocale(props.locale))
 const t = (key: keyof AuthMessages, vars?: Record<string, string | number>) =>

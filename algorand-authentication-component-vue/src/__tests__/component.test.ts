@@ -79,6 +79,14 @@ describe('<AlgorandAuthentication>', () => {
     expect(screen().attributes('data-theme')).toBe('light')
   })
 
+  it('keeps a data-theme attribute passed by the host when theme is auto', () => {
+    const w = mount(AlgorandAuthentication, {
+      props: { arc14Realm: 'Auth#ARC14', authorizedOnlyAccess: true },
+      attrs: { 'data-theme': 'dark' }
+    })
+    expect(w.find('[data-testid="aa-screen"]').attributes('data-theme')).toBe('dark')
+  })
+
   it('applies the `theme` prop to the sign dialog too', async () => {
     const w = mountComponent({ theme: 'dark' })
     authStore.account = algosdk.generateAccount().addr.toString()

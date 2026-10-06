@@ -25,9 +25,6 @@ query?.addEventListener('change', (e) => (systemDark.value = e.matches))
 /** What the user picked in the switcher (`system` follows the OS). */
 export const themeChoice = ref<ThemeChoice>(initialChoice())
 
-/** The palette actually shown. */
-export const resolvedTheme = ref<'light' | 'dark'>('light')
-
 export function setTheme(choice: ThemeChoice) {
   themeChoice.value = choice
   try {
@@ -44,10 +41,11 @@ export function setTheme(choice: ThemeChoice) {
 }
 
 // The page is styled through `data-theme` on <html> (see the Tailwind `dark` variant in main.css).
-// The component gets the same value through its `theme` prop.
+// With "System" the component runs in `theme="auto"` and picks the scheme up from that marker;
+// "Light" / "Dark" are passed to it through the `theme` prop.
 watchEffect(() => {
-  resolvedTheme.value =
+  const resolved =
     themeChoice.value === 'system' ? (systemDark.value ? 'dark' : 'light') : themeChoice.value
-  document.documentElement.dataset.theme = resolvedTheme.value
-  document.documentElement.style.colorScheme = resolvedTheme.value
+  document.documentElement.dataset.theme = resolved
+  document.documentElement.style.colorScheme = resolved
 })
