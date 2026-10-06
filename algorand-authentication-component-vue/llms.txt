@@ -8,7 +8,7 @@ Read these in order when integrating the component into an app:
 
 - [Integration guide](docs/INTEGRATION.md): protected app vs public page with a Login button, wallet registration, API calls, backend verification, signing, localization, tests, troubleshooting
 - [AI agent playbook](skill/algorand-authentication-integration/SKILL.md): step-by-step instructions with context-gathering questions, verification checklist and a troubleshooting table
-- [README](README.md): install, props, events, composable API, styling, localization
+- [README](README.md): install, props, events, composable API, styling, light/dark mode (`theme` prop), localization
 - [Migration from 1.x / 2.0.x](docs/MIGRATION.md)
 - [Changelog](CHANGELOG.md)
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.1.0
+
+### Added
+
+- **Light and dark mode.** New `theme` prop (`auto` | `light` | `dark`, default `auto`). `auto` follows
+  `prefers-color-scheme` and a host `.dark` / `data-theme="dark"` ancestor; the sign-in screen, registration form,
+  password dialog and alerts all have a polished dark palette (WCAG AA contrast, `color-scheme` set for native controls).
+- New CSS variables for both palettes: `--aa-heading`, `--aa-input-bg`, `--aa-input-disabled-bg`, `--aa-placeholder`,
+  `--aa-icon`, `--aa-icon-hover`, `--aa-focus-ring`, `--aa-surface-border`, `--aa-card-shadow`, `--aa-overlay`,
+  `--aa-secondary-text`, `--aa-success-*`, `--aa-info-*`, `--aa-warn-*`, `--aa-form-panel`, `--aa-wallet-*`,
+  `--aa-light-btn*`. Existing variables keep working; a brand colour set only on `.aa-root` applies to light mode —
+  see README → Light and dark mode.
+- Demo: System / Light / Dark switcher (`?theme=`, remembered) and a dark page theme; Playwright theme + axe checks.
+
 ## 3.0.0
 
 Supersedes the `2.0.x` releases on npm, which were the older use-wallet 4 + PrimeVue line (same API

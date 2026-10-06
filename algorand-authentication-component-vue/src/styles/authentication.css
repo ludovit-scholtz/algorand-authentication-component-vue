@@ -3,20 +3,47 @@
  * Every class is prefixed with `aa-`. Customize through the CSS variables on `.aa-root`.
  */
 .aa-root {
+  color-scheme: light;
   --aa-primary: #2563eb;
   --aa-primary-hover: #1d4ed8;
   --aa-primary-contrast: #ffffff;
   --aa-focus: #3b82f6;
+  --aa-focus-ring: rgba(59, 130, 246, 0.25);
   --aa-text: #1f2937;
+  --aa-heading: #111827;
   --aa-text-muted: #4b5563;
   --aa-label: #374151;
   --aa-surface: #ffffff;
+  --aa-surface-border: rgba(15, 23, 42, 0.06);
+  --aa-input-bg: #ffffff;
+  --aa-input-disabled-bg: #f3f4f6;
+  --aa-placeholder: #9ca3af;
+  --aa-icon: #6b7280;
+  --aa-icon-hover: #111827;
   --aa-border: #d1d5db;
   --aa-secondary: #e5e7eb;
+  --aa-secondary-text: #1f2937;
   --aa-secondary-hover: #d1d5db;
   --aa-danger-bg: #fee2e2;
   --aa-danger-text: #991b1b;
+  --aa-success-bg: #dcfce7;
+  --aa-success-text: #166534;
+  --aa-info-bg: #dbeafe;
+  --aa-info-text: #1e40af;
+  --aa-warn-bg: #fef3c7;
+  --aa-warn-text: #92400e;
+  --aa-form-panel: rgba(255, 255, 255, 0.55);
   --aa-dark-panel: rgba(17, 24, 39, 0.82);
+  --aa-wallet-text: #ffffff;
+  --aa-wallet-muted: #d1d5db;
+  --aa-wallet-bg: rgba(31, 41, 55, 0.5);
+  --aa-wallet-bg-hover: rgba(55, 65, 81, 0.6);
+  --aa-wallet-border: rgba(209, 213, 219, 0.7);
+  --aa-light-btn: #f3f4f6;
+  --aa-light-btn-hover: #ffffff;
+  --aa-light-btn-text: #111827;
+  --aa-card-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 10px 25px -5px rgba(15, 23, 42, 0.12);
+  --aa-overlay: rgba(17, 24, 39, 0.6);
   --aa-radius: 0.5rem;
   --aa-radius-sm: 0.375rem;
   --aa-cover: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 45%, #c7d2fe 100%);
@@ -39,6 +66,92 @@
 .aa-root *::before,
 .aa-root *::after {
   box-sizing: border-box;
+}
+
+/*
+ * Dark theme. Applied when theme="dark" (data-theme="dark" on the root), when the host page marks an
+ * ancestor with .dark / [data-theme="dark"], or - unless theme="light" - when the OS prefers dark.
+ */
+.aa-root[data-theme='dark'],
+:where(.dark, [data-theme='dark']) .aa-root:not([data-theme='light']) {
+  color-scheme: dark;
+  --aa-primary: #3b82f6;
+  --aa-primary-hover: #60a5fa;
+  --aa-focus: #60a5fa;
+  --aa-focus-ring: rgba(96, 165, 250, 0.35);
+  --aa-text: #e5e7eb;
+  --aa-heading: #f9fafb;
+  --aa-text-muted: #9ca3af;
+  --aa-label: #d1d5db;
+  --aa-surface: #1f2937;
+  --aa-surface-border: rgba(255, 255, 255, 0.08);
+  --aa-input-bg: #111827;
+  --aa-input-disabled-bg: #1f2937;
+  --aa-placeholder: #6b7280;
+  --aa-icon: #9ca3af;
+  --aa-icon-hover: #f9fafb;
+  --aa-border: #374151;
+  --aa-secondary: #374151;
+  --aa-secondary-text: #f3f4f6;
+  --aa-secondary-hover: #4b5563;
+  --aa-danger-bg: rgba(239, 68, 68, 0.16);
+  --aa-danger-text: #fca5a5;
+  --aa-success-bg: rgba(34, 197, 94, 0.16);
+  --aa-success-text: #86efac;
+  --aa-info-bg: rgba(59, 130, 246, 0.18);
+  --aa-info-text: #93c5fd;
+  --aa-warn-bg: rgba(245, 158, 11, 0.18);
+  --aa-warn-text: #fcd34d;
+  --aa-form-panel: rgba(3, 7, 18, 0.55);
+  --aa-dark-panel: rgba(3, 7, 18, 0.78);
+  --aa-wallet-bg: rgba(255, 255, 255, 0.05);
+  --aa-wallet-bg-hover: rgba(255, 255, 255, 0.1);
+  --aa-wallet-border: rgba(255, 255, 255, 0.16);
+  --aa-light-btn: #e5e7eb;
+  --aa-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -6px rgba(0, 0, 0, 0.55);
+  --aa-overlay: rgba(0, 0, 0, 0.7);
+  --aa-cover: linear-gradient(135deg, #0b1220 0%, #111a33 45%, #1e1b4b 100%);
+}
+@media (prefers-color-scheme: dark) {
+  .aa-root:not([data-theme='light']) {
+    color-scheme: dark;
+    --aa-primary: #3b82f6;
+    --aa-primary-hover: #60a5fa;
+    --aa-focus: #60a5fa;
+    --aa-focus-ring: rgba(96, 165, 250, 0.35);
+    --aa-text: #e5e7eb;
+    --aa-heading: #f9fafb;
+    --aa-text-muted: #9ca3af;
+    --aa-label: #d1d5db;
+    --aa-surface: #1f2937;
+    --aa-surface-border: rgba(255, 255, 255, 0.08);
+    --aa-input-bg: #111827;
+    --aa-input-disabled-bg: #1f2937;
+    --aa-placeholder: #6b7280;
+    --aa-icon: #9ca3af;
+    --aa-icon-hover: #f9fafb;
+    --aa-border: #374151;
+    --aa-secondary: #374151;
+    --aa-secondary-text: #f3f4f6;
+    --aa-secondary-hover: #4b5563;
+    --aa-danger-bg: rgba(239, 68, 68, 0.16);
+    --aa-danger-text: #fca5a5;
+    --aa-success-bg: rgba(34, 197, 94, 0.16);
+    --aa-success-text: #86efac;
+    --aa-info-bg: rgba(59, 130, 246, 0.18);
+    --aa-info-text: #93c5fd;
+    --aa-warn-bg: rgba(245, 158, 11, 0.18);
+    --aa-warn-text: #fcd34d;
+    --aa-form-panel: rgba(3, 7, 18, 0.55);
+    --aa-dark-panel: rgba(3, 7, 18, 0.78);
+    --aa-wallet-bg: rgba(255, 255, 255, 0.05);
+    --aa-wallet-bg-hover: rgba(255, 255, 255, 0.1);
+    --aa-wallet-border: rgba(255, 255, 255, 0.16);
+    --aa-light-btn: #e5e7eb;
+    --aa-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -6px rgba(0, 0, 0, 0.55);
+    --aa-overlay: rgba(0, 0, 0, 0.7);
+    --aa-cover: linear-gradient(135deg, #0b1220 0%, #111a33 45%, #1e1b4b 100%);
+  }
 }
 
 /* ---------- screen layout ---------- */
@@ -72,13 +185,13 @@
   }
 }
 .aa-panel--form {
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--aa-form-panel);
   backdrop-filter: blur(6px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.12);
 }
 .aa-panel--wallets {
   background: var(--aa-dark-panel);
-  color: #fff;
+  color: var(--aa-wallet-text);
   backdrop-filter: blur(6px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.12);
 }
@@ -93,16 +206,15 @@
   padding: 1.75rem;
   background: var(--aa-surface);
   border-radius: var(--aa-radius);
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--aa-surface-border);
+  box-shadow: var(--aa-card-shadow);
 }
 .aa-title {
   margin: 0;
   font-size: 1.5rem;
   line-height: 2rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--aa-heading);
 }
 .aa-subtitle {
   margin: -0.75rem 0 0;
@@ -130,7 +242,7 @@
   padding: 0.5rem 0.75rem;
   font: inherit;
   color: var(--aa-text);
-  background: #fff;
+  background: var(--aa-input-bg);
   border: 1px solid var(--aa-border);
   border-radius: var(--aa-radius-sm);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -142,15 +254,15 @@
   padding-right: 2.5rem;
 }
 .aa-input::placeholder {
-  color: #9ca3af;
+  color: var(--aa-placeholder);
 }
 .aa-input:focus {
   outline: none;
   border-color: var(--aa-focus);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 0 3px var(--aa-focus-ring);
 }
 .aa-input:disabled {
-  background: #f3f4f6;
+  background: var(--aa-input-disabled-bg);
   cursor: not-allowed;
 }
 .aa-reveal {
@@ -164,14 +276,14 @@
   width: 2rem;
   height: 2rem;
   padding: 0;
-  color: #6b7280;
+  color: var(--aa-icon);
   background: transparent;
   border: 0;
   border-radius: var(--aa-radius-sm);
   cursor: pointer;
 }
 .aa-reveal:hover {
-  color: #111827;
+  color: var(--aa-icon-hover);
 }
 .aa-reveal:focus-visible {
   outline: 2px solid var(--aa-focus);
@@ -213,18 +325,18 @@
   background: var(--aa-primary-hover);
 }
 .aa-btn--secondary {
-  color: #1f2937;
+  color: var(--aa-secondary-text);
   background: var(--aa-secondary);
 }
 .aa-btn--secondary:hover:not(:disabled) {
   background: var(--aa-secondary-hover);
 }
 .aa-btn--light {
-  color: #111827;
-  background: #f3f4f6;
+  color: var(--aa-light-btn-text);
+  background: var(--aa-light-btn);
 }
 .aa-btn--light:hover:not(:disabled) {
-  background: #fff;
+  background: var(--aa-light-btn-hover);
 }
 .aa-actions {
   display: flex;
@@ -240,14 +352,14 @@
   padding: 0.25rem;
   font: inherit;
   font-size: 0.875rem;
-  color: #d1d5db;
+  color: var(--aa-wallet-muted);
   text-decoration: underline;
   background: none;
   border: 0;
   cursor: pointer;
 }
 .aa-link:hover {
-  color: #fff;
+  color: var(--aa-wallet-text);
 }
 
 /* ---------- alerts ---------- */
@@ -261,16 +373,16 @@
   background: var(--aa-danger-bg);
 }
 .aa-alert--success {
-  color: #166534;
-  background: #dcfce7;
+  color: var(--aa-success-text);
+  background: var(--aa-success-bg);
 }
 .aa-alert--info {
-  color: #1e40af;
-  background: #dbeafe;
+  color: var(--aa-info-text);
+  background: var(--aa-info-bg);
 }
 .aa-alert--warn {
-  color: #92400e;
-  background: #fef3c7;
+  color: var(--aa-warn-text);
+  background: var(--aa-warn-bg);
 }
 .aa-wallets .aa-alert {
   margin-top: 1rem;
@@ -286,7 +398,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   text-align: center;
-  color: #fff;
+  color: var(--aa-wallet-text);
 }
 .aa-wallet-list {
   display: flex;
@@ -304,16 +416,16 @@
   padding: 0.5rem 1rem;
   font: inherit;
   font-weight: 500;
-  color: #fff;
+  color: var(--aa-wallet-text);
   text-align: left;
-  background: rgba(31, 41, 55, 0.5);
-  border: 1px solid #d1d5db;
+  background: var(--aa-wallet-bg);
+  border: 1px solid var(--aa-wallet-border);
   border-radius: var(--aa-radius-sm);
   cursor: pointer;
   transition: background-color 0.15s;
 }
 .aa-wallet:hover:not(:disabled) {
-  background: rgba(55, 65, 81, 0.6);
+  background: var(--aa-wallet-bg-hover);
 }
 .aa-wallet:focus-visible {
   outline: 2px solid var(--aa-focus);
@@ -335,21 +447,21 @@
 }
 .aa-chevron {
   flex: none;
-  color: #9ca3af;
+  color: var(--aa-wallet-muted);
 }
 .aa-session {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem;
-  border: 1px solid rgba(209, 213, 219, 0.6);
+  border: 1px solid var(--aa-wallet-border);
   border-radius: var(--aa-radius);
-  background: rgba(31, 41, 55, 0.5);
+  background: var(--aa-wallet-bg);
 }
 .aa-session-label {
   margin: 0;
   font-size: 0.875rem;
-  color: #d1d5db;
+  color: var(--aa-wallet-muted);
 }
 .aa-session-address {
   margin: 0;
@@ -359,7 +471,7 @@
 .aa-empty {
   margin: 0;
   text-align: center;
-  color: #d1d5db;
+  color: var(--aa-wallet-muted);
 }
 
 /* ---------- sign dialog ---------- */
@@ -371,7 +483,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgba(17, 24, 39, 0.6);
+  background: var(--aa-overlay);
   backdrop-filter: blur(3px);
 }
 .aa-dialog {

@@ -35,8 +35,8 @@ an **ARC-76** account derived from an email and a password — and hands your ap
   `auth.signData`), with the right UI for each account type (wallet approval or password dialog).
 - **Two usage modes.** A _protected app_ (sign-in screen until authenticated) or a _public page_ with a Login
   button whose content changes once the user is signed in — see the live demo's mode switch.
-- **Production-ready UI.** Responsive, accessible (labels, focus handling, keyboard), themeable with CSS
-  variables, **14 languages** (af cs de en es hu it ko nl pl ru sk tr zh), no PrimeVue/Tailwind required.
+- **Production-ready UI.** Responsive, accessible (labels, focus handling, keyboard), **light and dark mode**
+  (automatic or via the `theme` prop), themeable with CSS variables, **14 languages** (af cs de en es hu it ko nl pl ru sk tr zh), no PrimeVue/Tailwind required.
 - **Tested end to end.** Unit tests plus Playwright suites for ARC-76, wallets, localization and a live round
   trip with Biatec Wallet.
 - **AI-friendly.** A written integration guide, an agent playbook (`SKILL.md`) and `llms.txt` ship with the

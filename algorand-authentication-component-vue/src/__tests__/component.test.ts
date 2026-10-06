@@ -69,6 +69,24 @@ describe('<AlgorandAuthentication>', () => {
     expect(w.find('[data-testid="aa-wallet-pera"]').exists()).toBe(true)
   })
 
+  it('applies the `theme` prop as data-theme (auto leaves it unset)', async () => {
+    const w = mountComponent({ authorizedOnlyAccess: true })
+    const screen = () => w.find('[data-testid="aa-screen"]')
+    expect(screen().attributes('data-theme')).toBeUndefined()
+    await w.setProps({ theme: 'dark' })
+    expect(screen().attributes('data-theme')).toBe('dark')
+    await w.setProps({ theme: 'light' })
+    expect(screen().attributes('data-theme')).toBe('light')
+  })
+
+  it('applies the `theme` prop to the sign dialog too', async () => {
+    const w = mountComponent({ theme: 'dark' })
+    authStore.account = algosdk.generateAccount().addr.toString()
+    authStore.inArc76Signature = true
+    await nextTick()
+    expect(w.find('[data-testid="aa-sign-dialog"]').attributes('data-theme')).toBe('dark')
+  })
+
   it('filters wallets by the `wallets` prop', () => {
     const w = mountComponent({ authorizedOnlyAccess: true, wallets: ['biatec'] })
     expect(w.find('[data-testid="aa-wallet-biatec"]').exists()).toBe(true)

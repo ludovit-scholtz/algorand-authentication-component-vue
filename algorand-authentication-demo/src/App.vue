@@ -16,6 +16,7 @@ import {
 
 import ToastHost from './components/ToastHost.vue'
 import { addToast } from './toast'
+import { resolvedTheme, setTheme, themeChoice, type ThemeChoice } from './theme'
 import { currentLocale, demoMessages, format, switchLocale, type DemoMessages } from './i18n'
 
 const locale = currentLocale()
@@ -24,6 +25,8 @@ const t = (key: keyof DemoMessages, vars?: Record<string, string | number>) =>
   format(demoMessages[locale][key], vars)
 const onLanguage = (event: Event) =>
   switchLocale((event.target as HTMLSelectElement).value as AuthLocale)
+
+const onTheme = (event: Event) => setTheme((event.target as HTMLSelectElement).value as ThemeChoice)
 
 const auth = useAVMAuthentication()
 const { algodClient } = useWallet()
@@ -122,16 +125,16 @@ async function changeNetwork(event: Event) {
 const primaryButton =
   'inline-flex cursor-pointer items-center justify-center rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:cursor-not-allowed disabled:opacity-50'
 const secondaryButton =
-  'inline-flex cursor-pointer items-center justify-center rounded-md bg-gray-200 px-4 py-2 font-medium text-gray-800 hover:bg-gray-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500'
+  'inline-flex cursor-pointer items-center justify-center rounded-md bg-gray-200 dark:bg-slate-700 px-4 py-2 font-medium text-gray-800 dark:text-slate-100 hover:bg-gray-300 dark:hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500'
 </script>
 
 <template>
   <ToastHost />
-  <div class="absolute top-1 left-3 z-[1500] flex flex-wrap gap-2 text-xs text-gray-700">
-    <label class="flex items-center gap-2 rounded-md bg-white/90 px-2 py-1 shadow">
+  <div class="absolute top-1 left-3 z-[1500] flex flex-wrap gap-2 text-xs text-gray-700 dark:text-slate-300">
+    <label class="flex items-center gap-2 rounded-md bg-white/90 dark:bg-slate-800/90 px-2 py-1 shadow">
       {{ t('language') }}
       <select
-        class="rounded border border-gray-300 bg-white px-1 py-0.5 text-gray-900"
+        class="rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-1 py-0.5 text-gray-900 dark:text-slate-100"
         data-testid="lang-select"
         :value="locale"
         @change="onLanguage"
@@ -141,10 +144,23 @@ const secondaryButton =
         </option>
       </select>
     </label>
-    <label class="flex items-center gap-2 rounded-md bg-white/90 px-2 py-1 shadow">
+    <label class="flex items-center gap-2 rounded-md bg-white/90 dark:bg-slate-800/90 px-2 py-1 shadow">
+      {{ t('theme') }}
+      <select
+        class="rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-1 py-0.5 text-gray-900 dark:text-slate-100"
+        data-testid="theme-select"
+        :value="themeChoice"
+        @change="onTheme"
+      >
+        <option value="system">{{ t('themeSystem') }}</option>
+        <option value="light">{{ t('themeLight') }}</option>
+        <option value="dark">{{ t('themeDark') }}</option>
+      </select>
+    </label>
+    <label class="flex items-center gap-2 rounded-md bg-white/90 dark:bg-slate-800/90 px-2 py-1 shadow">
       {{ t('mode') }}
       <select
-        class="rounded border border-gray-300 bg-white px-1 py-0.5 text-gray-900"
+        class="rounded border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-1 py-0.5 text-gray-900 dark:text-slate-100"
         data-testid="mode-select"
         :value="state.requireAuthentication ? 'protected' : 'public'"
         @change="
@@ -160,16 +176,17 @@ const secondaryButton =
     arc14Realm="Demo"
     cover-image="/auth-cover.jpg"
     :locale="locale"
+    :theme="resolvedTheme"
     :authorizedOnlyAccess="state.requireAuthentication"
     @onNotification="onNotification"
   >
     <main class="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 px-4 pt-14 pb-10">
       <header class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-        <h1 class="text-2xl font-bold text-gray-900">{{ t('appTitle') }}</h1>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-slate-100">{{ t('appTitle') }}</h1>
         <div class="flex items-center gap-3" data-testid="user-chip">
           <template v-if="auth.authStore.isAuthenticated">
             <span
-              class="rounded-full bg-green-100 px-3 py-1 font-mono text-xs text-green-800"
+              class="rounded-full bg-green-100 dark:bg-green-500/15 px-3 py-1 font-mono text-xs text-green-800 dark:text-green-300"
               :title="auth.authStore.account"
               data-testid="chip-account"
             >
@@ -186,7 +203,7 @@ const secondaryButton =
           </template>
           <template v-else>
             <span
-              class="rounded-full bg-gray-200 px-3 py-1 text-xs text-gray-700"
+              class="rounded-full bg-gray-200 dark:bg-slate-700 px-3 py-1 text-xs text-gray-700 dark:text-slate-300"
               data-testid="chip-guest"
             >
               {{ t('guest') }}
@@ -201,10 +218,10 @@ const secondaryButton =
             </button>
           </template>
         </div>
-        <label class="flex items-center gap-2 text-sm text-gray-600">
+        <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400">
           {{ t('network') }}
           <select
-            class="rounded-md border border-gray-300 bg-white px-2 py-1 text-gray-900"
+            class="rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-2 py-1 text-gray-900 dark:text-slate-100"
             data-testid="network-select"
             :value="activeNetwork"
             @change="changeNetwork"
@@ -219,9 +236,9 @@ const secondaryButton =
         class="flex flex-col gap-6"
         data-testid="unauthenticated"
       >
-        <div class="rounded-lg bg-white p-6 shadow-md" data-testid="public-content">
+        <div class="rounded-lg bg-white dark:bg-slate-800 p-6 shadow-md" data-testid="public-content">
           <h2 class="text-xl font-semibold">{{ t('publicHeading') }}</h2>
-          <p class="mt-2 text-gray-600">{{ t('publicLead') }}</p>
+          <p class="mt-2 text-gray-600 dark:text-slate-400">{{ t('publicLead') }}</p>
           <button
             type="button"
             :class="[primaryButton, 'mt-4']"
@@ -240,52 +257,52 @@ const secondaryButton =
           </button>
         </div>
         <div
-          class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-gray-600"
+          class="rounded-lg border border-dashed border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-900/60 p-6 text-gray-600 dark:text-slate-400"
           data-testid="locked-area"
         >
-          <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-700">
+          <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-700 dark:text-slate-300">
             <span aria-hidden="true">🔒</span> {{ t('lockedTitle') }}
           </h2>
           <p class="mt-1 text-sm">{{ t('lockedText') }}</p>
           <div class="mt-4 space-y-2" aria-hidden="true">
-            <div class="h-3 w-3/4 rounded bg-gray-200"></div>
-            <div class="h-3 w-1/2 rounded bg-gray-200"></div>
-            <div class="h-3 w-2/3 rounded bg-gray-200"></div>
+            <div class="h-3 w-3/4 rounded bg-gray-200 dark:bg-slate-700"></div>
+            <div class="h-3 w-1/2 rounded bg-gray-200 dark:bg-slate-700"></div>
+            <div class="h-3 w-2/3 rounded bg-gray-200 dark:bg-slate-700"></div>
           </div>
         </div>
       </section>
 
       <section v-else class="flex flex-col gap-6" data-testid="authenticated">
         <p
-          class="rounded-lg bg-green-50 px-4 py-3 text-green-800 ring-1 ring-green-200"
+          class="rounded-lg bg-green-50 dark:bg-green-500/10 px-4 py-3 text-green-800 dark:text-green-300 ring-1 ring-green-200 dark:ring-green-500/30"
           data-testid="welcome"
         >
           {{ t('welcomeBack') }},
           <span class="font-mono">{{ shortAddress(auth.authStore.account) }}</span>
         </p>
-        <div class="rounded-lg bg-white p-6 shadow-md">
+        <div class="rounded-lg bg-white dark:bg-slate-800 p-6 shadow-md">
           <h2 class="text-xl font-semibold">{{ t('authTitle') }}</h2>
           <dl class="mt-4 grid gap-4 text-sm sm:grid-cols-[10rem_1fr]">
-            <dt class="font-medium text-gray-600">{{ authMessages[locale].email }}</dt>
+            <dt class="font-medium text-gray-600 dark:text-slate-400">{{ authMessages[locale].email }}</dt>
             <dd class="break-all" data-testid="auth-email">
               {{ auth.authStore.arc76email || '—' }}
             </dd>
-            <dt class="font-medium text-gray-600">{{ t('account') }}</dt>
+            <dt class="font-medium text-gray-600 dark:text-slate-400">{{ t('account') }}</dt>
             <dd class="font-mono break-all" data-testid="auth-account">
               {{ auth.authStore.account }}
             </dd>
-            <dt class="font-medium text-gray-600">{{ t('walletProvider') }}</dt>
+            <dt class="font-medium text-gray-600 dark:text-slate-400">{{ t('walletProvider') }}</dt>
             <dd data-testid="auth-wallet">{{ auth.authStore.wallet }}</dd>
           </dl>
 
-          <label for="arc14Header" class="mt-6 block text-sm font-medium text-gray-600">
+          <label for="arc14Header" class="mt-6 block text-sm font-medium text-gray-600 dark:text-slate-400">
             {{ t('headerLabel') }}
           </label>
           <textarea
             id="arc14Header"
             readonly
             rows="5"
-            class="mt-1 w-full rounded-md border border-gray-300 bg-gray-50 p-2 font-mono text-xs"
+            class="mt-1 w-full rounded-md border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-900/60 p-2 font-mono text-xs"
             data-testid="auth-header"
             :value="auth.authStore.arc14Header"
           />
@@ -310,9 +327,9 @@ const secondaryButton =
           </div>
         </div>
 
-        <div class="rounded-lg bg-white p-6 shadow-md" data-testid="sign-tx-card">
+        <div class="rounded-lg bg-white dark:bg-slate-800 p-6 shadow-md" data-testid="sign-tx-card">
           <h2 class="text-xl font-semibold">{{ t('signTxTitle') }}</h2>
-          <p class="mt-1 text-sm text-gray-600">
+          <p class="mt-1 text-sm text-gray-600 dark:text-slate-400">
             {{ t('signTxText') }}
           </p>
           <button
@@ -325,33 +342,33 @@ const secondaryButton =
             {{ t('signTxButton') }}
           </button>
           <template v-if="state.lastSignedTransaction">
-            <label for="lastSigned" class="mt-4 block text-sm font-medium text-gray-600">
+            <label for="lastSigned" class="mt-4 block text-sm font-medium text-gray-600 dark:text-slate-400">
               {{ t('signedTxLabel') }}
             </label>
             <textarea
               id="lastSigned"
               readonly
               rows="4"
-              class="mt-1 w-full rounded-md border border-gray-300 bg-gray-50 p-2 font-mono text-xs"
+              class="mt-1 w-full rounded-md border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-900/60 p-2 font-mono text-xs"
               data-testid="signed-tx"
               :value="state.lastSignedTransaction"
             />
           </template>
         </div>
 
-        <div class="rounded-lg bg-white p-6 shadow-md" data-testid="sign-data-card">
+        <div class="rounded-lg bg-white dark:bg-slate-800 p-6 shadow-md" data-testid="sign-data-card">
           <h2 class="text-xl font-semibold">{{ t('signDataTitle') }}</h2>
-          <p class="mt-1 text-sm text-gray-600">
+          <p class="mt-1 text-sm text-gray-600 dark:text-slate-400">
             {{ t('signDataText') }}
           </p>
-          <label for="dataToSign" class="mt-4 block text-sm font-medium text-gray-600">
+          <label for="dataToSign" class="mt-4 block text-sm font-medium text-gray-600 dark:text-slate-400">
             {{ t('dataLabel') }}
           </label>
           <textarea
             id="dataToSign"
             v-model="state.dataToSign"
             rows="2"
-            class="mt-1 w-full rounded-md border border-gray-300 p-2 text-sm"
+            class="mt-1 w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-2 text-sm"
             data-testid="data-input"
           />
           <button
@@ -365,7 +382,7 @@ const secondaryButton =
           </button>
           <p
             v-if="!auth.canSignData()"
-            class="mt-2 text-sm text-amber-700"
+            class="mt-2 text-sm text-amber-700 dark:text-amber-300"
             data-testid="sign-data-unsupported"
           >
             {{ t('cannotSign', { wallet: auth.authStore.wallet }) }}
@@ -375,17 +392,17 @@ const secondaryButton =
             class="mt-4 grid gap-2 text-sm sm:grid-cols-[8rem_1fr]"
             data-testid="data-result"
           >
-            <dt class="font-medium text-gray-600">{{ t('signer') }}</dt>
+            <dt class="font-medium text-gray-600 dark:text-slate-400">{{ t('signer') }}</dt>
             <dd class="font-mono break-all" data-testid="data-signer">
               {{ state.dataSignature.signer }}
             </dd>
-            <dt class="font-medium text-gray-600">{{ t('domain') }}</dt>
+            <dt class="font-medium text-gray-600 dark:text-slate-400">{{ t('domain') }}</dt>
             <dd data-testid="data-domain">{{ state.dataSignature.domain }}</dd>
-            <dt class="font-medium text-gray-600">{{ t('signature') }}</dt>
+            <dt class="font-medium text-gray-600 dark:text-slate-400">{{ t('signature') }}</dt>
             <dd class="font-mono break-all text-xs" data-testid="data-signature">
               {{ state.dataSignature.signature }}
             </dd>
-            <dt class="font-medium text-gray-600">{{ t('verified') }}</dt>
+            <dt class="font-medium text-gray-600 dark:text-slate-400">{{ t('verified') }}</dt>
             <dd data-testid="data-valid">
               {{ state.dataSignature.valid ? t('valid') : t('invalid') }}
             </dd>

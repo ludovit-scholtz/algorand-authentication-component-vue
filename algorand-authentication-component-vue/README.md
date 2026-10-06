@@ -99,6 +99,7 @@ Without it the slot is always rendered and you open the sign-in screen yourself 
 | `coverImage`           | `string`             | gradient               | Background image URL for the sign-in screen.                                                       |
 | `locale`               | `string`             | browser language       | Language tag (`sk`, `de-AT`, …). See [Localization](#localization).                                |
 | `messages`             | `Partial<AuthMessages>` | –                   | Override single UI strings of the active language.                                                 |
+| `theme`                | `'auto' \| 'light' \| 'dark'` | `auto`      | Colour scheme. `auto` follows the OS and the host page; see [Light and dark mode](#light-and-dark-mode). |
 
 Any other attribute (e.g. `class`) is applied to the sign-in screen root element.
 
@@ -235,10 +236,50 @@ CSS variables on `.aa-root`:
 }
 ```
 
-Available variables: `--aa-primary`, `--aa-primary-hover`, `--aa-primary-contrast`, `--aa-focus`,
-`--aa-text`, `--aa-text-muted`, `--aa-label`, `--aa-surface`, `--aa-border`, `--aa-secondary`,
-`--aa-secondary-hover`, `--aa-danger-bg`, `--aa-danger-text`, `--aa-dark-panel`, `--aa-radius`,
-`--aa-radius-sm`, `--aa-cover`.
+Available variables (each has a light and a dark value):
+
+| Group    | Variables |
+| -------- | --------- |
+| Brand    | `--aa-primary`, `--aa-primary-hover`, `--aa-primary-contrast`, `--aa-focus`, `--aa-focus-ring` |
+| Text     | `--aa-text`, `--aa-heading`, `--aa-text-muted`, `--aa-label`, `--aa-placeholder`, `--aa-icon`, `--aa-icon-hover` |
+| Surfaces | `--aa-surface`, `--aa-surface-border`, `--aa-input-bg`, `--aa-input-disabled-bg`, `--aa-border`, `--aa-card-shadow`, `--aa-overlay` |
+| Buttons  | `--aa-secondary`, `--aa-secondary-text`, `--aa-secondary-hover`, `--aa-light-btn`, `--aa-light-btn-hover`, `--aa-light-btn-text` |
+| Alerts   | `--aa-danger-bg`/`-text`, `--aa-success-bg`/`-text`, `--aa-info-bg`/`-text`, `--aa-warn-bg`/`-text` |
+| Panels   | `--aa-form-panel`, `--aa-dark-panel`, `--aa-wallet-text`, `--aa-wallet-muted`, `--aa-wallet-bg`, `--aa-wallet-bg-hover`, `--aa-wallet-border` |
+| Shape    | `--aa-radius`, `--aa-radius-sm`, `--aa-cover` |
+
+### Light and dark mode
+
+The component ships a light and a dark palette and picks one automatically:
+
+| `theme` | Result |
+| ------- | ------ |
+| `auto` (default) | Dark when the OS prefers dark (`prefers-color-scheme`) **or** when an ancestor has the class `dark` or `data-theme="dark"`; otherwise light. |
+| `light` | Always light, even if the OS or page is dark. |
+| `dark` | Always dark. |
+
+```vue
+<!-- follow the OS / host page -->
+<AlgorandAuthentication arc14Realm="MyApp" />
+
+<!-- bind it to your own theme switcher -->
+<AlgorandAuthentication arc14Realm="MyApp" :theme="isDark ? 'dark' : 'light'" />
+```
+
+The `theme` prop sets `data-theme` on the component root (`auto` leaves it unset) and also applies to the
+password dialog. To brand a palette, override the variables for that scheme — a variable set on `.aa-root`
+applies to light mode only unless you scope it:
+
+```css
+.aa-root { --aa-primary: #7c3aed; }                               /* light */
+.aa-root[data-theme='dark'],
+:where(.dark, [data-theme='dark']) .aa-root { --aa-primary: #a78bfa; } /* dark, forced or host-driven */
+@media (prefers-color-scheme: dark) {
+  .aa-root:not([data-theme='light']) { --aa-primary: #a78bfa; }        /* dark, from the OS */
+}
+```
+
+Both palettes keep text and controls at WCAG AA contrast (checked by axe in the Playwright suite).
 
 The layout is two panels (form | wallets) on screens ≥ 768 px and stacked below that.
 

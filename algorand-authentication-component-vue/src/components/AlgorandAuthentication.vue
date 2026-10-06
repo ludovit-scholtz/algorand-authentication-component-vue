@@ -33,6 +33,8 @@ const props = withDefaults(
     locale?: string
     /** Override individual UI strings of the active language. */
     messages?: Partial<AuthMessages>
+    /** `auto` (default) follows the OS / host page, `light` and `dark` force a palette. */
+    theme?: 'auto' | 'light' | 'dark'
   }>(),
   {
     wallets: () => [],
@@ -42,7 +44,8 @@ const props = withDefaults(
     authorizedOnlyAccess: false,
     coverImage: undefined,
     locale: undefined,
-    messages: undefined
+    messages: undefined,
+    theme: 'auto'
   }
 )
 
@@ -78,6 +81,9 @@ const showAuthentication = computed(
 const screenStyle = computed(() =>
   props.coverImage ? { '--aa-cover': `url("${props.coverImage}")` } : undefined
 )
+
+// `auto` leaves the attribute off so the stylesheet follows prefers-color-scheme / a host .dark class
+const themeAttr = computed(() => (props.theme === 'auto' ? undefined : props.theme))
 
 const language = computed(() => resolveLocale(props.locale))
 const t = (key: keyof AuthMessages, vars?: Record<string, string | number>) =>
@@ -244,6 +250,7 @@ async function signWithArc76() {
     v-bind="$attrs"
     class="aa-root aa-screen"
     :lang="language"
+    :data-theme="themeAttr"
     :style="screenStyle"
     data-testid="aa-screen"
   >
@@ -410,6 +417,7 @@ async function signWithArc76() {
     class="aa-root aa-overlay"
     data-testid="aa-sign-dialog"
     :lang="language"
+    :data-theme="themeAttr"
   >
     <form
       class="aa-card aa-dialog"
