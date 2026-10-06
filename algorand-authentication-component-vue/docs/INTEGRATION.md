@@ -1,6 +1,6 @@
 # Integration guide
 
-How to add Algorand sign-in to a Vue 3 app with `algorand-authentication-component-vue` v2 — written for
+How to add Algorand sign-in to a Vue 3 app with `algorand-authentication-component-vue` v3 — written for
 developers **and** for AI coding agents. Every snippet is taken from the working
 [demo app](https://github.com/ludovit-scholtz/algorand-authentication-component-vue/tree/main/algorand-authentication-demo)
 (live: <https://algorand-authentication-demo-seven.vercel.app>), which is covered by Playwright tests.
@@ -8,7 +8,7 @@ developers **and** for AI coding agents. Every snippet is taken from the working
 > **AI agents:** read this file top to bottom, then follow the machine-oriented playbook in
 > [`skill/algorand-authentication-integration/SKILL.md`](../skill/algorand-authentication-integration/SKILL.md)
 > (context-gathering questions, verification checklist, troubleshooting table). Do not use APIs that are not
-> written in these two files — v1.x / use-wallet 4 / PrimeVue snippets are wrong for v2.
+> written in these two files — v1.x / use-wallet 4 / PrimeVue snippets are wrong for v3.
 
 Contents: [1. Pick a mode](#1-pick-a-mode) · [2. Install and register wallets](#2-install-and-register-wallets) ·
 [3. Protected app](#3-protected-app) · [4. Public page with a Login button](#4-public-page-with-a-login-button) ·

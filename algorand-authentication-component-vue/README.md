@@ -6,10 +6,10 @@ zero-fee self payment — either with any [`@txnlab/use-wallet`](https://github.
 from an email address and a password. Your backend receives a standard `Authorization: SigTx …`
 header it can verify without any shared secret.
 
-- **v2** — requires use-wallet 5, has **no PrimeVue / Tailwind dependency** (self-contained CSS), ships
+- **v3** — requires use-wallet 5, has **no PrimeVue / Tailwind dependency** (self-contained CSS), ships
   TypeScript types, and an [AI integration guide](docs/AI_INTEGRATION.md).
 - **[Integration guide](https://github.com/ludovit-scholtz/algorand-authentication-component-vue/blob/main/algorand-authentication-component-vue/docs/INTEGRATION.md)** — protected app *and* public page with a Login button, API calls, backend verification, signing, tests; written for developers and AI agents.
-- Upgrading from 1.x? Read [docs/MIGRATION.md](docs/MIGRATION.md) (5 minutes).
+- Upgrading from 1.x or 2.0.x? Read [docs/MIGRATION.md](docs/MIGRATION.md) (5 minutes).
 - **Live demo: <https://algorand-authentication-demo-seven.vercel.app>** (ARC-76 sign-in, wallets incl. Biatec, transaction + raw data signing, 14 languages) · demo source:
   [`algorand-authentication-demo`](https://github.com/ludovit-scholtz/algorand-authentication-component-vue/tree/main/algorand-authentication-demo)
 

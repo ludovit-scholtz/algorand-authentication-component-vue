@@ -2,7 +2,7 @@
 
 **Live: <https://algorand-authentication-demo-seven.vercel.app>**
 
-Reference app for [`algorand-authentication-component-vue`](../algorand-authentication-component-vue) v2 —
+Reference app for [`algorand-authentication-component-vue`](../algorand-authentication-component-vue) v3 —
 Vue 3, `@txnlab/use-wallet-vue` 5, the Biatec wallet adapter
 ([`biatec-wallet-use-wallet-client`](https://www.npmjs.com/package/biatec-wallet-use-wallet-client)) next to
 Pera, Defly, Exodus, Kibisis and Lute, and ARC-76 email + password accounts. No PrimeVue; Tailwind is used only
