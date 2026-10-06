@@ -2,10 +2,10 @@
 import { dismissToast, toasts } from '../toast'
 
 const styles = {
-  error: 'bg-red-50 text-red-800 ring-red-200',
-  success: 'bg-green-50 text-green-800 ring-green-200',
-  info: 'bg-blue-50 text-blue-800 ring-blue-200',
-  warn: 'bg-amber-50 text-amber-800 ring-amber-200'
+  error: 'bg-red-50 dark:bg-red-500/10 text-red-800 dark:text-red-300 ring-red-200 dark:ring-red-500/30',
+  success: 'bg-green-50 dark:bg-green-500/10 text-green-800 dark:text-green-300 ring-green-200 dark:ring-green-500/30',
+  info: 'bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-300 ring-blue-200 dark:ring-blue-500/30',
+  warn: 'bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-300 ring-amber-200 dark:ring-amber-500/30'
 } as const
 </script>
 

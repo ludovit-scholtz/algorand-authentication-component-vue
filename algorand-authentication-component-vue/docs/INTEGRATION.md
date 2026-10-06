@@ -228,7 +228,9 @@ others fall back to English there; it reads the locale once at startup). Theme w
 .aa-root { --aa-primary: #7c3aed; --aa-primary-hover: #6d28d9; --aa-radius: 0.75rem; }
 ```
 
-Or pass `cover-image="/bg.jpg"`. Full variable list: [README → Styling](../README.md#styling).
+Or pass `cover-image="/bg.jpg"`. Dark mode is automatic (`theme="auto"` follows the OS and a `.dark` /
+`data-theme="dark"` ancestor); force it with `theme="light"` / `theme="dark"`, e.g. from your own switcher.
+Full variable list: [README → Styling](../README.md#styling), [Light and dark mode](../README.md#light-and-dark-mode).
 
 ## 9. Test your integration
 

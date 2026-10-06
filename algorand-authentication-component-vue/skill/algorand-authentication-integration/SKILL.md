@@ -123,8 +123,9 @@ Choose the mode:
 | Only some wallets                                 | `:wallets="['biatec','pera']"` (use-wallet wallet ids).                                                |
 | Custom algod instead of the active network's      | `algodHost`, `algodPort`, `algodToken`.                                                                |
 | Brand look                                        | Override `--aa-*` CSS variables on `.aa-root` or pass `coverImage`; see README "Styling".              |
+| Dark mode                                         | Automatic (`theme="auto"`: OS + host `.dark`/`data-theme="dark"`); force with `theme="light"\|"dark"`.   |
 
-Props: `arc14Realm` (required), `authorizedOnlyAccess`, `wallets`, `algodHost`, `algodPort`, `algodToken`, `coverImage`, `locale`, `messages`.
+Props: `arc14Realm` (required), `authorizedOnlyAccess`, `wallets`, `algodHost`, `algodPort`, `algodToken`, `coverImage`, `locale`, `messages`, `theme`.
 Events: `onNotification`, `authenticated`. There is **no** `onStateChange`, `useDemoMnemonics` or `class` prop in v2
 (attributes like `class` fall through to the screen root).
 

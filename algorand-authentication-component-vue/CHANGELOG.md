@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.1.0
+
+### Added
+
+- **Light and dark mode.** New `theme` prop (`auto` | `light` | `dark`, default `auto`). `auto` follows a host
+  `.dark` / `.light` / `data-theme` ancestor and otherwise `prefers-color-scheme`. The sign-in screen, registration form,
+  password dialog and alerts have a dark palette (colour contrast checked with axe in both schemes).
+- Every colour is a `--aa-*` token defined once as `light-dark(light, dark)`; new tokens: `--aa-heading`, `--aa-input-bg`,
+  `--aa-input-disabled-bg`, `--aa-placeholder`, `--aa-icon`, `--aa-icon-hover`, `--aa-focus-ring`, `--aa-surface-border`,
+  `--aa-card-shadow`, `--aa-overlay`, `--aa-secondary-text`, `--aa-success-*`, `--aa-info-*`, `--aa-warn-*`,
+  `--aa-form-panel`, `--aa-wallet-*`, `--aa-light-btn*`. Defaults sit in `:where(.aa-root)`, so existing
+  `.aa-root { --aa-… }` overrides keep working (and now apply to both schemes).
+- Behaviour note: with `theme="auto"` the screen turns dark on dark-mode devices. Pass `theme="light"` to keep the old look.
+- Requires CSS `light-dark()` (Chrome/Edge 123, Firefox 120, Safari 17.5).
+- Demo: System / Light / Dark switcher (`?theme=`, remembered) and a dark page theme; Playwright theme + axe checks.
+
 ## 3.0.0
 
 Supersedes the `2.0.x` releases on npm, which were the older use-wallet 4 + PrimeVue line (same API

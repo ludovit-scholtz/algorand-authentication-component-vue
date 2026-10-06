@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, useAttrs } from 'vue'
 import algosdk from 'algosdk'
 import { useWallet, type Wallet } from '@txnlab/use-wallet-vue'
 
@@ -14,6 +14,7 @@ import { authStore } from '../store/authStore'
 import type { INotification } from '../types'
 
 defineOptions({ inheritAttrs: false })
+const attrs = useAttrs()
 
 const props = withDefaults(
   defineProps<{
@@ -33,6 +34,8 @@ const props = withDefaults(
     locale?: string
     /** Override individual UI strings of the active language. */
     messages?: Partial<AuthMessages>
+    /** `auto` (default) follows the OS / host page, `light` and `dark` force a palette. */
+    theme?: 'auto' | 'light' | 'dark'
   }>(),
   {
     wallets: () => [],
@@ -42,7 +45,8 @@ const props = withDefaults(
     authorizedOnlyAccess: false,
     coverImage: undefined,
     locale: undefined,
-    messages: undefined
+    messages: undefined,
+    theme: 'auto'
   }
 )
 
@@ -77,6 +81,12 @@ const showAuthentication = computed(
 
 const screenStyle = computed(() =>
   props.coverImage ? { '--aa-cover': `url("${props.coverImage}")` } : undefined
+)
+
+// `auto` leaves the attribute off so the stylesheet follows prefers-color-scheme / a host .dark class
+// (an explicit data-theme passed by the host as a plain attribute is kept)
+const themeAttr = computed(() =>
+  props.theme === 'auto' ? (attrs['data-theme'] as string | undefined) : props.theme
 )
 
 const language = computed(() => resolveLocale(props.locale))
@@ -244,6 +254,7 @@ async function signWithArc76() {
     v-bind="$attrs"
     class="aa-root aa-screen"
     :lang="language"
+    :data-theme="themeAttr"
     :style="screenStyle"
     data-testid="aa-screen"
   >
@@ -410,6 +421,7 @@ async function signWithArc76() {
     class="aa-root aa-overlay"
     data-testid="aa-sign-dialog"
     :lang="language"
+    :data-theme="themeAttr"
   >
     <form
       class="aa-card aa-dialog"
