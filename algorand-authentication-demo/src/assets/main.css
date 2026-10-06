@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* Dark mode is driven by data-theme="dark" on <html> (see theme.ts), not only the OS setting. */
-@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+@custom-variant dark (&:where(html[data-theme='dark'], html[data-theme='dark'] *));
 
 @theme {
   --font-sans:
@@ -20,7 +20,7 @@ body {
     color 0.2s;
 }
 
-[data-theme='dark'] body {
+html[data-theme='dark'] body {
   color: #e2e8f0;
   background: #0b1120;
 }

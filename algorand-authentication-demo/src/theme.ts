@@ -17,9 +17,10 @@ function initialChoice(): ThemeChoice {
   return 'system'
 }
 
-const query = window.matchMedia('(prefers-color-scheme: dark)')
-const systemDark = ref(query.matches)
-query.addEventListener('change', (e) => (systemDark.value = e.matches))
+const query =
+  typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-color-scheme: dark)') : null
+const systemDark = ref(query?.matches ?? false)
+query?.addEventListener('change', (e) => (systemDark.value = e.matches))
 
 /** What the user picked in the switcher (`system` follows the OS). */
 export const themeChoice = ref<ThemeChoice>(initialChoice())
@@ -33,6 +34,12 @@ export function setTheme(choice: ThemeChoice) {
     window.localStorage.setItem(STORAGE_KEY, choice)
   } catch {
     // storage unavailable
+  }
+  // an explicit ?theme= in the address bar would win again on reload, so keep it in sync
+  const url = new URL(window.location.href)
+  if (url.searchParams.has('theme')) {
+    url.searchParams.set('theme', choice)
+    window.history.replaceState(null, '', url)
   }
 }
 

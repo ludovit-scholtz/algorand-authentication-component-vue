@@ -250,11 +250,11 @@ Available variables (each has a light and a dark value):
 
 ### Light and dark mode
 
-The component ships a light and a dark palette and picks one automatically:
+The component ships a light and a dark palette (each token is one CSS `light-dark()` pair) and picks one:
 
 | `theme` | Result |
 | ------- | ------ |
-| `auto` (default) | Dark when the OS prefers dark (`prefers-color-scheme`) **or** when an ancestor has the class `dark` or `data-theme="dark"`; otherwise light. |
+| `auto` (default) | Follows the host page — an ancestor with `.dark` / `data-theme="dark"` (or `.light` / `data-theme="light"`) — and otherwise the OS (`prefers-color-scheme`). |
 | `light` | Always light, even if the OS or page is dark. |
 | `dark` | Always dark. |
 
@@ -266,20 +266,22 @@ The component ships a light and a dark palette and picks one automatically:
 <AlgorandAuthentication arc14Realm="MyApp" :theme="isDark ? 'dark' : 'light'" />
 ```
 
-The `theme` prop sets `data-theme` on the component root (`auto` leaves it unset) and also applies to the
-password dialog. To brand a palette, override the variables for that scheme — a variable set on `.aa-root`
-applies to light mode only unless you scope it:
+The prop sets `data-theme` on the sign-in screen and on the password dialog; your slotted app content is
+**not** touched — theme it with your own styles. Requires `light-dark()` support (Chrome/Edge 123, Firefox 120,
+Safari 17.5, i.e. every browser since spring 2024).
+
+Brand colours: a plain override beats the defaults and applies to **both** schemes. Use `light-dark()` for
+different values per scheme:
 
 ```css
-.aa-root { --aa-primary: #7c3aed; }                               /* light */
-.aa-root[data-theme='dark'],
-:where(.dark, [data-theme='dark']) .aa-root { --aa-primary: #a78bfa; } /* dark, forced or host-driven */
-@media (prefers-color-scheme: dark) {
-  .aa-root:not([data-theme='light']) { --aa-primary: #a78bfa; }        /* dark, from the OS */
+.aa-root {
+  --aa-primary: #7c3aed; /* same in light and dark */
+  --aa-surface: light-dark(#ffffff, #1e1b4b); /* different per scheme */
 }
 ```
 
-Both palettes keep text and controls at WCAG AA contrast (checked by axe in the Playwright suite).
+Contrast of the form card (default, hover, registration, error) is verified with axe in both schemes in the
+Playwright suite.
 
 The layout is two panels (form | wallets) on screens ≥ 768 px and stacked below that.
 
