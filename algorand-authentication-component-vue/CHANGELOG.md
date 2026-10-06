@@ -1,6 +1,9 @@
 # Changelog
 
-## 2.0.0
+## 3.0.0
+
+Supersedes the `2.0.x` releases on npm, which were the older use-wallet 4 + PrimeVue line (same API
+shape as 1.x). Upgrading from 1.x or 2.0.x? See [docs/MIGRATION.md](docs/MIGRATION.md).
 
 ### Breaking
 
@@ -32,6 +35,10 @@
 ### Dependencies
 
 Vite 8, Vue 3.5, Vitest 5, ESLint 10 (flat config), TypeScript 6, vue-tsc 3, Prettier 3.9, algosdk 3.8.
+
+## 2.0.0 – 2.0.6
+
+Published from the previous repository: use-wallet 4 + PrimeVue (superseded by 3.0.0).
 
 ## 1.1.3
 

@@ -1,6 +1,6 @@
 {
   "name": "algorand-authentication-component-vue",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Vue 3 authentication component for Algorand / AVM: ARC-14 sign-in with use-wallet 5 wallets or ARC-76 email + password accounts.",
   "type": "module",
   "keywords": [

@@ -1,11 +1,11 @@
-# Migrating from 1.x to 2.0
+# Migrating from 1.x / 2.0.x to 3.0
 
-2.0 is a breaking release. The authentication flow (ARC-14 header, ARC-76 derivation) is unchanged, so
+3.0 is a breaking release for everyone on 1.x or the 2.0.x line (use-wallet 4 + PrimeVue). The authentication flow (ARC-14 header, ARC-76 derivation) is unchanged, so
 **existing ARC-76 accounts keep the same addresses** and **backends need no changes**.
 
 ## What changed
 
-| Area               | 1.x                                                                | 2.x                                                                                  |
+| Area               | 1.x / 2.0.x                                                        | 3.x                                                                                  |
 | ------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
 | use-wallet         | `@txnlab/use-wallet-vue` ^4 (wallets bundled)                      | `@txnlab/use-wallet-vue` **^5**, one package per wallet                              |
 | UI dependencies    | PrimeVue 4, Tailwind classes, `tailwindcss-primeui`                | **None.** Own stylesheet, `aa-` prefixed classes, CSS variables                      |
@@ -41,13 +41,13 @@ is reset after signing.
 2. **Wallet registration** — enums become factories:
 
    ```ts
-   // 1.x / use-wallet 4
+   // 1.x, 2.0.x / use-wallet 4
    app.use(WalletManagerPlugin, {
      wallets: [WalletId.PERA, WalletId.DEFLY, { id: WalletId.BIATEC, options: { projectId } }],
      defaultNetwork: NetworkId.TESTNET
    })
 
-   // 2.x / use-wallet 5
+   // 3.x / use-wallet 5
    import { pera } from '@txnlab/use-wallet-pera'
    import { defly } from '@txnlab/use-wallet-defly'
    import { biatec } from 'biatec-wallet-use-wallet-client'

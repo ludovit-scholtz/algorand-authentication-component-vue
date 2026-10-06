@@ -15,10 +15,10 @@ an **ARC-76** account derived from an email and a password — and hands your ap
 | 🧭 **Guides**   | [Integration guide](algorand-authentication-component-vue/docs/INTEGRATION.md) · [AI agent playbook](algorand-authentication-component-vue/docs/AI_INTEGRATION.md) · [Migration](algorand-authentication-component-vue/docs/MIGRATION.md) · [Changelog](algorand-authentication-component-vue/CHANGELOG.md) |
 | ▶️ **Live demo** | <https://algorand-authentication-demo-seven.vercel.app>                                                                                                                                                                                |
 
-> **Version note.** The npm releases up to `2.0.6` are the older line built on use-wallet 4 and PrimeVue. The
-> code in this repository (use-wallet 5, no PrimeVue/Tailwind, ARC-60 data signing, 14 languages) is the next
-> major line — see the [changelog](algorand-authentication-component-vue/CHANGELOG.md) and
-> [migration guide](algorand-authentication-component-vue/docs/MIGRATION.md), and check the version on npm before installing.
+> **Version note.** `3.x` is the use-wallet 5 line (no PrimeVue/Tailwind, ARC-60 data signing, 14 languages). The
+> `2.0.x` and `1.x` releases on npm were built on use-wallet 4 and PrimeVue — upgrade with the
+> [migration guide](algorand-authentication-component-vue/docs/MIGRATION.md); see the
+> [changelog](algorand-authentication-component-vue/CHANGELOG.md).
 
 ## Why use it
 

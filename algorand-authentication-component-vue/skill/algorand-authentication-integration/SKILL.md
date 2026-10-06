@@ -3,12 +3,12 @@ name: algorand-authentication-integration
 description: Add Algorand / AVM sign-in (ARC-14 wallet signatures via @txnlab/use-wallet 5, or ARC-76 email + password accounts) to a Vue 3 app with algorand-authentication-component-vue v2. Use when asked to add Algorand login, wallet connect + authentication, an `Authorization: SigTx` header, ARC-14 / ARC-76 auth, or to migrate algorand-authentication-component-vue 1.x to 2.x.
 ---
 
-# Integrate algorand-authentication-component-vue (v2)
+# Integrate algorand-authentication-component-vue (v3)
 
 You are adding a sign-in screen and a signed-in session to a **Vue 3** app using
-`algorand-authentication-component-vue@2` (<https://github.com/ludovit-scholtz/algorand-authentication-component-vue>).
+`algorand-authentication-component-vue@3` (<https://github.com/ludovit-scholtz/algorand-authentication-component-vue>).
 Read `docs/INTEGRATION.md` of the package first (it contains the protected-app and public-page patterns with full code). Follow the steps in order, do not skip the verification section, and do not improvise APIs that are
-not written here — v1.x, use-wallet 3/4 and PrimeVue-era snippets you may remember are **wrong** for v2.
+not written here — v1.x, use-wallet 3/4 and PrimeVue-era snippets you may remember are **wrong** for v3.
 
 Portable: works as a Claude Code skill, a Cursor/Windsurf rule, Copilot instructions, or plain reading.
 
@@ -51,7 +51,7 @@ confirm with the user), or apps that only need "connect wallet" without authenti
 ```
 
 `vue`, `@txnlab/use-wallet-vue` (^5) and `algosdk` (^3.5) are **peer dependencies** — install them explicitly.
-Do **not** install PrimeVue or Tailwind for this component; v2 needs neither.
+Do **not** install PrimeVue or Tailwind for this component; v3 needs neither.
 
 ## 2. Register wallets (`main.ts`)
 
@@ -225,4 +225,4 @@ Other languages: any Algorand SDK (`decode signed transaction`) + the same check
 | `Password is invalid` while signing                             | Different email/password than the one used to sign in; ARC-76 accounts are derived, not stored.         |
 | Backend rejects the header                                      | Realm mismatch, header older than ~1000 rounds, or the backend skipped the `"TX"` prefix when verifying. |
 | `sign()` never resolves                                         | The component is not mounted anywhere, so no password dialog exists for ARC-76 signing.                  |
-| 1.x code: `onStateChange`, `useDemoMnemonics`, `wallets=['pera','myalgo']` | Removed/changed — see `docs/MIGRATION.md`.                                                  |
+| 1.x / 2.0.x code: `onStateChange`, `useDemoMnemonics`, `wallets=['pera','myalgo']` | Removed/changed — see `docs/MIGRATION.md`.                                                  |
