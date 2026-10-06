@@ -1,0 +1,82 @@
+name: Publish to npm
+
+# Publishes algorand-authentication-component-vue to npmjs.com on every push to main - but only when the
+# version in algorand-authentication-component-vue/package.json is not on npm yet, so ordinary pushes
+# (docs, demo, tests) do not fail. Bump the version in a PR to release. Setup: docs/PUBLISHING.md
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: publish-npm
+  cancel-in-progress: false
+
+permissions:
+  contents: write # tag + GitHub release
+  id-token: write # npm provenance / trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # optional: create an environment named "npm-publish" with required reviewers and uncomment
+    # environment: npm-publish
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: version
+        name: Read package version and check npm
+        working-directory: algorand-authentication-component-vue
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$NAME@$VERSION is already on npm - nothing to publish. Bump the version to release."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$NAME@$VERSION is not on npm yet - publishing."
+          fi
+
+      - if: steps.version.outputs.publish == 'true'
+        uses: pnpm/action-setup@v4 # version comes from "packageManager" in the root package.json
+
+      - if: steps.version.outputs.publish == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - if: steps.version.outputs.publish == 'true'
+        name: Install, build and test
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+          pnpm -r lint
+          pnpm -r type-check
+          pnpm test
+
+      - if: steps.version.outputs.publish == 'true'
+        name: Publish
+        working-directory: algorand-authentication-component-vue
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - if: steps.version.outputs.publish == 'true'
+        name: Tag and create GitHub release
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists"
+          else
+            git tag "$TAG"
+            git push origin "$TAG"
+            gh release create "$TAG" --title "$TAG" --generate-notes
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

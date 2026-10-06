@@ -12,6 +12,7 @@ an **ARC-76** account derived from an email and a password — and hands your ap
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 📦 **npm**      | <https://www.npmjs.com/package/algorand-authentication-component-vue>                                                                                                                                                                  |
 | 📖 **npm docs** | the package README on the npm page above, and the shipped files: <https://unpkg.com/browse/algorand-authentication-component-vue/>                                                                                                     |
+| 🚀 **Publishing** | pushes to `main` publish new versions to npm automatically — [setup of the GitHub secrets](docs/PUBLISHING.md) |
 | 🧭 **Guides**   | [Integration guide](algorand-authentication-component-vue/docs/INTEGRATION.md) · [AI agent playbook](algorand-authentication-component-vue/docs/AI_INTEGRATION.md) · [Migration](algorand-authentication-component-vue/docs/MIGRATION.md) · [Changelog](algorand-authentication-component-vue/CHANGELOG.md) |
 | ▶️ **Live demo** | <https://algorand-authentication-demo-seven.vercel.app>                                                                                                                                                                                |
 
